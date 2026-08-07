@@ -191,7 +191,13 @@ Perguntas de conteúdo carregam sempre três elementos: métrica específica, ja
 
 ## Privacidade
 
-Dado sensível vive em tabelas `.sec`, fora do alcance desta investigação. O cuidado que sobra é um só: nenhuma lista de indivíduos entra na entrega, no HTML, no registro de conhecimento ou na memória persistente. Id de usuário aparece em tabela de evento como chave de junção e não deve sair de lá. Ao delegar, peça agregado, não lista de usuários. Se um caso individual for necessário pra ilustrar um padrão, descreva o comportamento sem identificar quem.
+Duas camadas, com regras diferentes.
+
+**Dado pessoal identificável** — nome, e-mail, telefone, documento — vive em tabelas `.sec`, fora do alcance desta investigação. Não há o que mascarar porque não há como alcançar. O efeito prático é o da fase 0: dimensão que só existe em `.sec` é limitação declarada, não obstáculo a contornar.
+
+**`customer_id` é hasheado** e circula normalmente. Pode aparecer no SQL da trilha de consultas, no registro de conhecimento e na definição de público, sem mascaramento e sem ser omitido do anexo de auditoria. Tratar id hasheado como PII só serviria pra tornar a auditoria impossível de refazer.
+
+O que sobra é regra de forma, não de sigilo: entrega é insight, não lista. Dashboard e documento carregam números agregados e o critério que define o público. Quando o público estimulável precisar ser materializado pra ativar a campanha, entregue a consulta que o gera, não milhares de linhas coladas no HTML.
 
 ## Entrega final
 
