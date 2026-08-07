@@ -18,9 +18,11 @@ O que a fase 0 já descobriu. Em investigação nova, leia daqui e só entrevist
 
 ### Colunas-chave
 
-| Tabela | Coluna | Significado | Observações (valores possíveis, nulos, pegadinhas) |
-|--------|--------|-------------|-----------------------------------------------------|
-| | | | |
+Significado que o Questionador deduziu, e não leu do Agente de Dados, entra prefixado com `[DEDUZIDO]` e não autoriza pular o mapeamento na fase 0 seguinte. Nenhuma coluna vira eixo de segmentação ou literal de filtro sem sonda registrada: distintos, % de nulos e valores reais mais frequentes.
+
+| Tabela | Coluna | Significado | Sonda (data + `#` da trilha) | Valores reais mais frequentes | % nulos |
+|--------|--------|-------------|------------------------------|-------------------------------|---------|
+| | | | | | |
 
 ### Relações entre tabelas
 
@@ -42,11 +44,19 @@ Dimensões que não existem, períodos faltantes, colunas não confiáveis. Cada
 
 ### Números de controle
 
-Usados na verificação de sanidade da fase 0. Valor, data da aferição e confirmação do usuário.
+Usados na verificação de sanidade da fase 0.
 
-| Número de controle | Valor | Data | Confirmado pelo usuário? |
-|--------------------|-------|------|--------------------------|
-| | | | |
+**Controle aritmético** (nunca dispensável, não depende do usuário). `COUNT(*)` acima de `COUNT(DISTINCT customer_id)` é fan-out de join, e o double check da fase 8 nunca pega.
+
+| Join principal | `COUNT(*)` | `COUNT(DISTINCT customer_id)` | Razão | Data |
+|----------------|-----------|-------------------------------|-------|------|
+| | | | | |
+
+**Âncora com o usuário.** Pergunte a expectativa dele antes de mostrar o número.
+
+| Número de controle | Esperado pelo usuário | Retornado | Data | Fechou? |
+|--------------------|-----------------------|-----------|------|---------|
+| | | | | |
 
 ---
 
