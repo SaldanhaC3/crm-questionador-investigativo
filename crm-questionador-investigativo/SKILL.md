@@ -68,7 +68,7 @@ Comece lendo o dicionário de dados da memória persistente. Depois, entreviste 
 - Qual período os dados cobrem? Há lacunas conhecidas?
 - Como as tabelas se relacionam (qual chave liga usuário a evento, evento a campanha)?
 
-O resultado é um mapa mental registrado que define até onde a investigação consegue ir. Descobrir na fase 4 que a coluna que sustentaria a hipótese não existe é falha da fase 0. E quando uma dimensão importante pra dúvida não existir nos dados, isso vira limitação declarada na entrega, não silêncio.
+O resultado é um mapa mental registrado que define até onde a investigação consegue ir. Descobrir na fase 4 que a coluna que sustentaria a hipótese não existe é falha da fase 0. E quando uma dimensão importante pra dúvida não existir nos dados, isso vira limitação declarada na entrega, não silêncio. Vale igual pra dimensão que existe mas só em tabela `.sec`: inacessível é o mesmo que inexistente aqui, e o lugar de descobrir isso é a fase 0, não a fase 4.
 
 **Verificação de sanidade do Agente de Dados.** Antes de confiar em qualquer retorno de conteúdo, peça ao Agente de Dados dois ou três números que o usuário provavelmente conhece de cor (base ativa total, volume da última campanha grande, transações do último mês) e apresente ao usuário pra confirmação. Se o Agente de Dados erra o que o usuário sabe, não dá pra confiar no que o usuário não sabe: pare, investigue com ele qual tabela ou filtro está errado, corrija o dicionário, e só então prossiga. Em investigações recorrentes sobre terreno já validado na memória, a verificação pode ser reduzida a um único número de controle.
 
@@ -189,14 +189,9 @@ Perguntas de conteúdo carregam sempre três elementos: métrica específica, ja
 - Métrica de sucesso e janela de leitura:
 - Riscos de contaminação e o que invalidaria o teste:
 
-## Privacidade e granularidade mínima
+## Privacidade
 
-Investigação de CRM mexe com dado de pessoa, e a entrega costuma ser um arquivo que circula. Duas regras:
-
-- Nenhum identificador individual entra na entrega, no HTML, no registro de conhecimento ou na memória persistente: nome, e-mail, telefone, documento, id de usuário. Se um caso individual for necessário pra ilustrar um padrão, descreva o comportamento sem identificar quem. Ao delegar, peça agregado, não lista de usuários
-- Recorte com poucas pessoas não é publicado com dimensões que, combinadas, identifiquem alguém (região + plano + faixa etária + data de entrada). Piso prático: 25 pessoas, ajustável pra cima se a política da empresa exigir. Abaixo disso o recorte vira contagem agregada ou sai da entrega
-
-Isso não impede investigar segmento pequeno, impede publicá-lo identificável. E o piso de privacidade é independente do piso estatístico da fase 3: um recorte pode ser grande o bastante pra publicar e pequeno demais pra sustentar conclusão.
+Dado sensível vive em tabelas `.sec`, fora do alcance desta investigação. O cuidado que sobra é um só: nenhuma lista de indivíduos entra na entrega, no HTML, no registro de conhecimento ou na memória persistente. Id de usuário aparece em tabela de evento como chave de junção e não deve sair de lá. Ao delegar, peça agregado, não lista de usuários. Se um caso individual for necessário pra ilustrar um padrão, descreva o comportamento sem identificar quem.
 
 ## Entrega final
 
