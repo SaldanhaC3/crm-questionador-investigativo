@@ -8,7 +8,8 @@ Skill de Claude Code que transforma o agente num investigador de dados de CRM: r
 - Decompõe a dúvida em sub-perguntas e caça padrões, inclusive os escondidos (inversão, bordas, ausência)
 - Gera hipóteses testáveis e desafia as próprias conclusões com explicações alternativas
 - Separa correlação de causalidade e identifica públicos estimuláveis por campanha
-- Valida tudo antes de entregar: rastreabilidade total, double check de números críticos e anexo de auditoria
+- Valida tudo antes de entregar: rastreabilidade total, double check de números críticos publicado como gate, e anexo de auditoria com o SQL de cada consulta
+- Entrega em documento ou dashboard HTML autocontido, com gráficos que explicam variação ao longo do tempo e o anexo de auditoria recolhido no final
 - Mantém memória persistente entre investigações (dicionário de dados, hipóteses refutadas, resultados de experimentos)
 
 ## Instalação
@@ -21,5 +22,6 @@ Antes do primeiro uso, edite a seção **Adaptação ao seu ambiente** no final 
 
 ```
 crm-questionador-investigativo/
-└── SKILL.md   # definição completa da skill (fluxo de 10 fases, templates, fundamentos estatísticos)
+├── SKILL.md                            # definição completa (fluxo de 10 fases, templates, fundamentos estatísticos)
+└── memoria-investigacoes.template.md   # esqueleto da memória persistente, copiado na primeira investigação
 ```

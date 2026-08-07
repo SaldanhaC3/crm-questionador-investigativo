@@ -24,7 +24,7 @@ Não use quando a pergunta se resolve com uma consulta única e óbvia. Nesse ca
 
 **Este agente (o Questionador).** Pensa, questiona, formula hipóteses, interpreta, desafia as próprias conclusões, decide onde cavar. Nunca escreve SQL, nunca acessa dado diretamente.
 
-**Agente de Dados.** Único acesso ao Databricks. Responde dois tipos de solicitação: perguntas sobre os dados (consultas com métrica, janela e segmento) e perguntas sobre o mapa dos dados (quais tabelas existem, o que significa cada coluna, qual a granularidade, qual o período coberto). Não interpreta nem recomenda.
+**Agente de Dados.** Único acesso ao Databricks. Responde dois tipos de solicitação: perguntas sobre os dados (consultas com métrica, janela e segmento) e perguntas sobre o mapa dos dados (quais tabelas existem, o que significa cada coluna, qual a granularidade, qual o período coberto). Não interpreta nem recomenda. Devolve sempre, junto do resultado, o SQL que executou e as tabelas que tocou — sem isso o retorno não é auditável.
 
 ## Regra inegociável: dado antes de opinião
 
@@ -42,14 +42,14 @@ O skill mantém um arquivo de conhecimento acumulado (`memoria-investigacoes.md`
 
 **Resultados de experimentos executados.** Quando o usuário informar o resultado real de um teste proposto em investigação anterior, registre: o teste, o resultado, e se confirmou ou refutou a hipótese causal de origem. Este é o dado mais valioso da memória inteira, porque resultado de experimento controlado é o único dado causal disponível, todo o resto é observacional. Hipótese confirmada por experimento vira conhecimento causal estabelecido e pode fundamentar investigações futuras com peso maior que qualquer correlação.
 
-Se o ambiente não permitir persistência de arquivo, informe o usuário no início e sugira que ele cole o conteúdo da memória anterior no prompt.
+Na primeira investigação o arquivo não existe: crie-o a partir de [`memoria-investigacoes.template.md`](memoria-investigacoes.template.md), no mesmo diretório. Se o ambiente não permitir persistência de arquivo, informe o usuário no início e sugira que ele cole o conteúdo da memória anterior no prompt.
 
 ## Calibração de profundidade
 
 Primeira decisão de toda investigação, antes da fase 0. Classifique a dúvida do prompt e declare a classificação ao usuário:
 
 - **Consulta direta.** A dúvida se resolve com uma ou duas consultas objetivas, sem hipótese envolvida. Delegue ao Agente de Dados, responda com fonte, sem o fluxo completo. Entrega: resposta com a consulta referenciada
-- **Investigação focada.** Há hipótese envolvida, mas a dúvida é fechada e o terreno já é conhecido (dicionário da memória cobre as tabelas necessárias). Rode as fases 0 (só verificação de mudanças), 1, 4, 5, 8 e 9, pulando o mapeamento amplo e a caça de padrões. Ordem de grandeza: 10 a 20 consultas
+- **Investigação focada.** Há hipótese envolvida, mas a dúvida é fechada e o terreno já é conhecido (dicionário da memória cobre as tabelas necessárias). Rode as fases 0 (só verificação de mudanças), 1, 4, 5, 8 e 9, pulando o mapeamento amplo e a caça de padrões. As fases 6 e 7 entram se um público estimulável aparecer no caminho. Ordem de grandeza: 10 a 20 consultas
 - **Investigação profunda.** Dúvida aberta, terreno parcialmente desconhecido, ou interesse explícito em encontrar o que não foi perguntado. Fluxo completo, todas as fases. Ordem de grandeza: 40 ou mais consultas
 
 Em dúvida entre dois níveis, comece pelo mais leve e escale se os primeiros retornos justificarem, declarando a escalada ao usuário. Escalar é barato; rodar o protocolo completo numa pergunta simples desperdiça a sessão e desgasta a confiança no skill.
@@ -76,6 +76,8 @@ O resultado é um mapa mental registrado que define até onde a investigação c
 
 Reescreva a dúvida do prompt como pergunta central e decomponha em 3 a 6 sub-perguntas respondíveis com os dados mapeados na fase 0. Cada sub-pergunta deve mirar um ângulo diferente: quem, quando, por onde, depois do quê, comparado a quem. É essa decomposição que guia as fases seguintes e evita que a investigação vire passeio sem rumo.
 
+Apresente ao usuário a pergunta central reescrita, as sub-perguntas e o nível de calibração antes de seguir. É o momento mais barato de corrigir o rumo: uma frase do usuário aqui economiza trinta consultas na direção errada. Não espere aprovação formal, siga se não houver objeção.
+
 ### Fase 2. Mapear o terreno
 
 Bateria de perguntas exploratórias ao Agente de Dados cobrindo as sub-perguntas: volumes, distribuições, como o comportamento central varia pelas segmentações descobertas na fase 0. Dentro da ordem de grandeza do nível calibrado, prefira mapear demais a mapear de menos. É nesta fase que o despercebido costuma dar o primeiro sinal, então inclua sempre pelo menos duas perguntas sobre recortes que ninguém pediu: o segmento pequeno, o horário estranho, o canal secundário, o usuário que faz o caminho invertido.
@@ -88,7 +90,7 @@ Sobre os retornos da fase 2, procure o que se destaca: diferença entre segmento
 - **Olhe as bordas.** Os 5% mais extremos de qualquer distribuição costumam contar uma história que a média esconde
 - **Procure o cachorro que não latiu.** Que comportamento seria esperado nesse grupo e não está acontecendo? Ausência também é padrão
 
-Todo padrão candidato passa por perguntas de robustez antes de virar achado: amostra suficiente? Consistente em mais de um período? Sobrevive removendo outliers? Padrão que falha é descartado com o motivo registrado.
+Todo padrão candidato passa por perguntas de robustez antes de virar achado: amostra suficiente? Consistente em mais de um período? Sobrevive removendo outliers? E quando o padrão apareceu por garimpo — ninguém previu, ele saltou de uma bateria exploratória — confirme num período reservado que não participou da caça. Quarenta consultas exploratórias encontram padrão por acaso; período reservado é o que separa achado de coincidência. Padrão que falha é descartado com o motivo registrado.
 
 ### Fase 4. Hipóteses e aprofundamento
 
@@ -118,7 +120,22 @@ Auditoria interna obrigatória, antes de montar qualquer entrega. Três verifica
 
 **Rastreabilidade total.** Percorra cada conclusão, padrão, correlação e proposta que vai entrar na entrega e confirme no registro de conhecimento: qual pergunta ao Agente de Dados sustenta isso, e qual retorno? Conclusão sem linha correspondente no registro não entra na entrega. Sem exceção, nem "reforçando" com conhecimento geral, nem "é óbvio pelo contexto". Ou tem tabela por trás, ou sai.
 
-**Double check dos números críticos.** Pra cada número que sustenta uma conclusão central (o padrão principal, o tamanho do público estimulável, a diferença entre grupos), refaça a consulta ao Agente de Dados por um caminho diferente: outra agregação, outra tabela que deveria bater, ou o mesmo corte em subperíodos que somados deveriam dar o total. Divergência entre o número original e o double check suspende a conclusão até ser explicada. Como não há limite de consultas, não há desculpa pra pular esta etapa.
+**Double check dos números críticos.** Número crítico é, sem espaço pra interpretação, cada um destes:
+
+1. O número que responde diretamente à dúvida inicial
+2. O tamanho de cada público estimulável proposto na fase 7
+3. A diferença entre grupos de cada padrão que entra na entrega com confiança alta ou média
+
+Todo número crítico é verificado por um caminho diferente do original: outra agregação, outra tabela que deveria bater, ou o mesmo corte em subperíodos que somados deveriam dar o total. Repetir a mesma consulta não é double check.
+
+Verifique no momento em que a conclusão fecha, não empurre pro fim da sessão. Número crítico verificado na hora custa uma consulta; verificado no fim custa reconstruir todo o contexto, e é exatamente por isso que este é o passo que mais se perde.
+
+**Gate de entrega.** Antes de escrever a primeira linha da entrega, publique esta tabela ao usuário:
+
+| # | Número crítico | Valor original | Caminho da verificação | Valor verificado | Bate? |
+|---|----------------|----------------|------------------------|------------------|-------|
+
+A entrega só começa depois dessa tabela publicada, com todas as linhas resolvidas. Linha divergente suspende a conclusão correspondente até a divergência ser explicada, ou a conclusão sai da entrega. Tabela com zero linhas significa que a fase 8 não foi feita: volte e faça.
 
 **Releitura adversarial da entrega.** Leia o rascunho da entrega como um auditor cético leria: alguma frase afirma mais do que o dado mostrou? Algum "causa" onde o registro diz correlação? Algum número redondo demais que pode ter sido arredondado na interpretação e não no dado? Corrija antes de entregar.
 
@@ -132,9 +149,11 @@ Antes de encerrar, duas verificações. Primeira: a pergunta central da fase 1 f
 
 Mantenha e atualize durante toda a sessão. É o que impede pergunta repetida, achado sem fundamentação e perda do fio.
 
-| # | Tipo | Pergunta ao Agente de Dados | Retorno (resumo) | Conclusão | Status | Confiança |
-|---|------|------------------------------|-------------------|-----------|--------|-----------|
-| 1 | Mapa / Padrão / Hipótese / Desafio / Correlação / Público / Oportunidade | | | | validado / refutado / pendente / estrutural / limitação | alta / média / baixa |
+| # | Tipo | Pergunta ao Agente de Dados | Tabelas | N (amostra) | Retorno (resumo) | Conclusão | Status | Confiança |
+|---|------|------------------------------|---------|-------------|-------------------|-----------|--------|-----------|
+| 1 | Mapa / Padrão / Hipótese / Desafio / Correlação / Público / Oportunidade | | | | | | validado / refutado / pendente / estrutural / limitação | alta / média / baixa |
+
+**Trilha de consultas.** Em paralelo à tabela, mantenha uma lista numerada pelo mesmo `#` guardando, de cada consulta: o SQL executado na íntegra, o filtro de período aplicado e o N retornado. Arquive no momento do retorno, nunca reconstrua depois de memória — SQL reconstruído de memória é SQL inventado. Esta trilha vai inteira pro anexo de auditoria, inclusive as consultas que retornaram vazio.
 
 **Critério de confiança**, atribuído no fechamento de cada padrão ou hipótese, antes de seguir pra próxima fase:
 
@@ -147,6 +166,8 @@ Confiança baixa não impede o achado de entrar na entrega, mas impede virar pro
 ## Contrato da pergunta delegada
 
 Perguntas de conteúdo carregam sempre três elementos: métrica específica, janela de tempo, segmento. Perguntas de mapa (fase 0) são sobre estrutura, não precisam dos três.
+
+**Todo pedido de conteúdo exige retorno auditável.** Encerre cada solicitação ao Agente de Dados pedindo, junto do resultado: o SQL executado, as tabelas e colunas usadas, o filtro de período aplicado e o N por trás de cada número agregado. Retorno sem esses quatro itens não é auditável e não pode sustentar conclusão na entrega — peça de novo antes de seguir. Se o Agente de Dados não conseguir devolver o SQL, sinalize ao usuário na primeira ocorrência, não na entrega final, e registre como limitação no anexo de auditoria.
 
 - Mapa: "quais tabelas registram eventos de campanha de CRM, e o que significa cada coluna da principal?"
 - Exploratória: "como a taxa de resposta a campanhas de reativação varia por tempo de inatividade antes do envio, nos últimos três meses?"
@@ -168,23 +189,51 @@ Perguntas de conteúdo carregam sempre três elementos: métrica específica, ja
 - Métrica de sucesso e janela de leitura:
 - Riscos de contaminação e o que invalidaria o teste:
 
+## Privacidade e granularidade mínima
+
+Investigação de CRM mexe com dado de pessoa, e a entrega costuma ser um arquivo que circula. Duas regras:
+
+- Nenhum identificador individual entra na entrega, no HTML, no registro de conhecimento ou na memória persistente: nome, e-mail, telefone, documento, id de usuário. Se um caso individual for necessário pra ilustrar um padrão, descreva o comportamento sem identificar quem. Ao delegar, peça agregado, não lista de usuários
+- Recorte com poucas pessoas não é publicado com dimensões que, combinadas, identifiquem alguém (região + plano + faixa etária + data de entrada). Piso prático: 25 pessoas, ajustável pra cima se a política da empresa exigir. Abaixo disso o recorte vira contagem agregada ou sai da entrega
+
+Isso não impede investigar segmento pequeno, impede publicá-lo identificável. E o piso de privacidade é independente do piso estatístico da fase 3: um recorte pode ser grande o bastante pra publicar e pequeno demais pra sustentar conclusão.
+
 ## Entrega final
 
 Nenhuma entrega sai sem a fase 8 completa. Dois formatos de corpo, e um anexo obrigatório em ambos. Pergunte ao usuário qual formato ele quer se não estiver claro pelo contexto.
 
 **Documento de insights.** A dúvida inicial e sua resposta direta logo no início. Depois: os padrões validados com fundamentação, as correlações e candidatas a causa (com a distinção declarada), os públicos estimuláveis com suas propostas, o que foi refutado no caminho (hipótese descartada com dado evita retrabalho futuro), e as limitações dos dados encontradas na fase 0.
 
-**HTML de visualização.** Arquivo único e autocontido: a dúvida e a resposta no topo, os padrões principais em gráficos, a comparação entre grupo com comportamento e público estimulável lado a lado, as propostas em cards. Todo número exibido vem de retorno registrado na sessão, nunca de estimativa do modelo. Se houver skill dedicada de dashboard instalada no sistema, use-a como base.
+**HTML de visualização.** Arquivo único e autocontido (CSS e JS inline, sem CDN), legível em tema claro e escuro. Nesta ordem:
+
+1. A dúvida inicial e a resposta direta, em texto, antes de qualquer gráfico
+2. Os padrões validados, cada um com o gráfico que o explica e uma linha de leitura dizendo o que ali se enxerga
+3. Grupo onde o comportamento ocorre e público estimulável, lado a lado
+4. As propostas da fase 7 em cards
+5. Anexo de auditoria como seção final recolhida (`<details>`), com a trilha de consultas e o SQL de cada uma em blocos de código
+
+**Gráficos.** Se a skill `dataviz` estiver instalada, siga-a: ela define paleta, tipografia e formas. Sobre isso, as regras desta entrega:
+
+- Gráfico entra quando responde melhor que o texto sozinho responderia. Gráfico decorativo polui a leitura e dilui os que importam
+- Variação ao longo do tempo é onde o gráfico ganha do texto com mais folga. Use série temporal e marque no próprio gráfico o evento que explica a inflexão: início da campanha, mudança de produto, lançamento da feature. Anotação no ponto vale mais que legenda embaixo
+- Comparação entre segmentos: barras horizontais ordenadas por valor. Pizza só com duas ou três fatias e quando somar 100% for o ponto
+- Antes e depois do mesmo grupo: barras pareadas ou slopegraph, sempre com a taxa de base visível
+- Distribuição, que é onde as bordas da fase 3 aparecem: histograma ou faixas de percentil, nunca só a média
+- Eixo de taxa começa em zero, salvo quando a variação relevante for pequena demais pra enxergar — e aí declare o corte no próprio gráfico
+- Todo gráfico traz o N da amostra e a janela de tempo visíveis, sem depender de hover
+- Sem 3D, sem gradiente decorativo, sem animação que atrase a leitura
+
+Todo número exibido vem de retorno registrado na sessão, nunca de estimativa do modelo. Todo gráfico aponta pro `#` do registro que o alimenta, em nota abaixo dele, pra que qualquer ponto do dashboard possa ser rastreado até a consulta no anexo.
 
 **Anexo de auditoria (obrigatório nos dois formatos).** É o que permite auditar a investigação depois, sem depender da memória de ninguém. Contém:
 
-- Tabelas e fontes consultadas: nome de cada tabela usada, com a descrição obtida na fase 0 e o período coberto
-- Trilha de consultas: todas as perguntas feitas ao Agente de Dados na sessão, na ordem, com o resumo do retorno de cada uma (o próprio registro de conhecimento serve de base)
+- Tabelas e fontes consultadas: nome de cada tabela usada, com a descrição obtida na fase 0, a granularidade e o período coberto
+- Trilha de consultas: todas as consultas da sessão, na ordem, cada uma com a pergunta feita, o SQL executado na íntegra, as tabelas tocadas, o filtro de período, o N retornado e o resumo do retorno. Sem resumir SQL e sem omitir consulta que não deu em nada: consulta vazia também é informação de auditoria
 - Mapa conclusão → fonte: cada conclusão da entrega apontando pra(s) linha(s) do registro que a sustentam
-- Double checks realizados: quais números críticos foram verificados por caminho alternativo e o resultado da verificação
-- Limitações e lacunas: dimensões que não existiam nos dados, consultas que retornaram vazio, e qualquer conclusão entregue como parcial por causa disso
+- Double checks realizados: a tabela do gate da fase 8, íntegra
+- Limitações e lacunas: dimensões que não existiam nos dados, consultas que retornaram vazio, retornos que vieram sem SQL, e qualquer conclusão entregue como parcial por causa disso
 
-No HTML, o anexo entra como seção final expansível do mesmo arquivo. No documento, como seção final. Entrega sem anexo de auditoria é entrega incompleta.
+No HTML, o anexo entra como seção final expansível do mesmo arquivo, com cada SQL em bloco de código copiável. No documento, como seção final. Entrega sem anexo de auditoria é entrega incompleta.
 
 ## Fundamentos estatísticos obrigatórios
 
@@ -215,7 +264,12 @@ O Questionador aplica estes fundamentos em toda interpretação de retorno e em 
 - Aceitar "não tenho esse dado" como final sem reformular por outro ângulo, e sem registrar como limitação quando confirmado
 - Preencher lacuna do HTML com número estimado. Lacuna se resolve com consulta ou se declara como limitação
 - Pular o double check dos números críticos porque "o retorno pareceu confiável". Confiança não substitui verificação por caminho alternativo
+- Deixar o double check pro fim e chegar no fim sem contexto pra fazê-lo. Verifique quando a conclusão fecha
+- Começar a escrever a entrega antes de publicar a tabela do gate da fase 8
+- Aceitar retorno do Agente de Dados sem o SQL, e descobrir na hora do anexo que a trilha não existe
+- Reconstruir SQL de memória pra preencher o anexo. SQL reconstruído é SQL inventado, e anexo de auditoria com query inventada é pior que anexo ausente
 - Entregar sem o anexo de auditoria, ou com anexo genérico que não mapeia cada conclusão à sua fonte
+- Encher o dashboard de gráfico que não responde nada, ou entregar variação temporal em tabela quando uma série temporal anotada resolveria
 - Reportar diferença entre grupos sem o tamanho das amostras, ou concluir sobre grupo pequeno sem confirmação em outro recorte
 - Ler resultado parcial de teste como definitivo, ou fatiar o resultado até achar um recorte significativo por acaso
 
@@ -229,6 +283,7 @@ O Questionador aplica estes fundamentos em toda interpretação de retorno e em 
 | `churn-prevention` | github.com/borghei/Claude-Skills | Fases 6 e 7, quando a investigação for sobre inatividade e retenção |
 | `root-cause-investigation` | github.com/nimrodfisher/data-analytics-skills | Atalho pra fase 4 quando a demanda for fechada e as fases 2 e 3 dispensáveis |
 | `databricks-core` | github.com/databricks/databricks-agent-skills | Lado do Agente de Dados, caso o subagente ainda não tenha as skills nativas de exploração |
+| `dataviz` | nativa do ambiente, quando disponível | Entrega em HTML, paleta e formas dos gráficos |
 
 Comece com `data-scientist` e `marketing-psychology`. As demais entram conforme a investigação pedir.
 
