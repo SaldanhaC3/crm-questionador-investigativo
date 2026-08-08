@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
@@ -6,82 +6,74 @@
 <!-- TÍTULO: troque pelo título curto da investigação -->
 <title>[TÍTULO DA INVESTIGAÇÃO]</title>
 <style>
-  /* ---------- tema ---------- */
   :root{
     --bg:#fbfbfa; --surface:#fff; --border:#e3e2df; --text:#1b1b19; --muted:#6b6a66;
-    --accent:#2f5f8a; --ok:#2e7d5b; --warn:#a86b1f; --bad:#a83232;
-    --c1:#2f5f8a; --c2:#7a9cb8; --c3:#c9a227; --c4:#6b8f71; --c5:#9c6b8e; --grid:#eceae6;
+    --accent:#2f5f8a; --ok:#2e7d5b; --warn:#a86b1f; --bad:#a83232; --grid:#eceae6;
+    --c1:#2f5f8a; --c2:#c9873f; --c3:#6b8f71; --c4:#9c6b8e; --c5:#7a9cb8; --c6:#8a8578;
   }
   @media (prefers-color-scheme: dark){
     :root{
       --bg:#191917; --surface:#212120; --border:#35342f; --text:#eceae6; --muted:#a3a099;
-      --accent:#7fb0d9; --ok:#6cc39a; --warn:#d9a95c; --bad:#e08a8a;
-      --c1:#7fb0d9; --c2:#4b7295; --c3:#d9bd5c; --c4:#8fb896; --c5:#c194b3; --grid:#2c2b28;
+      --accent:#7fb0d9; --ok:#6cc39a; --warn:#d9a95c; --bad:#e08a8a; --grid:#2c2b28;
+      --c1:#7fb0d9; --c2:#e0a86b; --c3:#8fb896; --c4:#c194b3; --c5:#4b7295; --c6:#a8a294;
     }
   }
   :root[data-theme="light"]{
     --bg:#fbfbfa; --surface:#fff; --border:#e3e2df; --text:#1b1b19; --muted:#6b6a66;
-    --accent:#2f5f8a; --ok:#2e7d5b; --warn:#a86b1f; --bad:#a83232;
-    --c1:#2f5f8a; --c2:#7a9cb8; --c3:#c9a227; --c4:#6b8f71; --c5:#9c6b8e; --grid:#eceae6;
+    --accent:#2f5f8a; --ok:#2e7d5b; --warn:#a86b1f; --bad:#a83232; --grid:#eceae6;
+    --c1:#2f5f8a; --c2:#c9873f; --c3:#6b8f71; --c4:#9c6b8e; --c5:#7a9cb8; --c6:#8a8578;
   }
   :root[data-theme="dark"]{
     --bg:#191917; --surface:#212120; --border:#35342f; --text:#eceae6; --muted:#a3a099;
-    --accent:#7fb0d9; --ok:#6cc39a; --warn:#d9a95c; --bad:#e08a8a;
-    --c1:#7fb0d9; --c2:#4b7295; --c3:#d9bd5c; --c4:#8fb896; --c5:#c194b3; --grid:#2c2b28;
+    --accent:#7fb0d9; --ok:#6cc39a; --warn:#d9a95c; --bad:#e08a8a; --grid:#2c2b28;
+    --c1:#7fb0d9; --c2:#e0a86b; --c3:#8fb896; --c4:#c194b3; --c5:#4b7295; --c6:#a8a294;
   }
 
   *{box-sizing:border-box}
-  body{
-    margin:0; background:var(--bg); color:var(--text);
+  body{margin:0; background:var(--bg); color:var(--text);
     font:16px/1.6 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-    -webkit-text-size-adjust:100%;
-  }
+    -webkit-text-size-adjust:100%}
   .wrap{max-width:1080px; margin:0 auto; padding:32px 20px 80px}
   h1{font-size:1.7rem; line-height:1.25; margin:0 0 6px; letter-spacing:-.01em}
   h2{font-size:1.15rem; margin:44px 0 14px; padding-bottom:8px; border-bottom:1px solid var(--border)}
   h3{font-size:1rem; margin:0 0 6px}
-  p{margin:0 0 12px} a{color:var(--accent)}
+  p{margin:0 0 12px} a{color:var(--accent)} ul{margin:0 0 12px; padding-left:22px}
   .muted{color:var(--muted)} .small{font-size:.85rem}
 
-  /* ---------- cabeçalho ---------- */
-  header{border-bottom:2px solid var(--border); padding-bottom:20px; margin-bottom:8px}
+  header{border-bottom:2px solid var(--border); padding-bottom:20px}
   .duvida{font-size:1.02rem; color:var(--muted); margin:0 0 14px}
   .duvida b{color:var(--text); font-weight:600}
   .meta{display:flex; flex-wrap:wrap; gap:8px; align-items:center; font-size:.85rem}
-  .chip{
-    border:1px solid var(--border); background:var(--surface); color:var(--muted);
-    border-radius:999px; padding:3px 11px; white-space:nowrap;
-  }
+  .chip{border:1px solid var(--border); background:var(--surface); color:var(--muted);
+    border-radius:999px; padding:3px 11px; white-space:nowrap}
   .chip.selo{border-color:var(--ok); color:var(--ok); font-weight:600}
   .chip.selo.parcial{border-color:var(--warn); color:var(--warn)}
 
-  /* ---------- resposta ---------- */
-  .resposta{
-    background:var(--surface); border:1px solid var(--border); border-left:3px solid var(--accent);
-    border-radius:6px; padding:18px 20px; margin:24px 0;
-  }
+  .resposta{background:var(--surface); border:1px solid var(--border); border-left:3px solid var(--accent);
+    border-radius:6px; padding:18px 20px; margin:24px 0}
   .resposta .num{font-size:2rem; font-weight:650; letter-spacing:-.02em; display:block; line-height:1.1}
 
-  /* ---------- blocos ---------- */
   .card{background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:18px 20px; margin:0 0 16px}
   .grid2{display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:16px}
   .leitura{font-size:.92rem; color:var(--muted); margin:10px 0 0; padding-left:10px; border-left:2px solid var(--border)}
   .fonte{font-size:.78rem; color:var(--muted); margin-top:8px; font-variant-numeric:tabular-nums}
-  .conf{font-size:.72rem; text-transform:uppercase; letter-spacing:.06em; font-weight:650; padding:2px 8px; border-radius:4px; border:1px solid}
+  .conf{font-size:.72rem; text-transform:uppercase; letter-spacing:.06em; font-weight:650;
+    padding:2px 8px; border-radius:4px; border:1px solid; white-space:nowrap}
   .conf.alta{color:var(--ok); border-color:var(--ok)}
   .conf.media{color:var(--warn); border-color:var(--warn)}
   .conf.baixa{color:var(--bad); border-color:var(--bad)}
   .head-achado{display:flex; gap:10px; align-items:baseline; justify-content:space-between; flex-wrap:wrap}
 
-  /* ---------- gráficos ---------- */
-  .chart{width:100%; overflow-x:auto}
+  .chart{width:100%; overflow-x:auto; margin-top:6px}
   .chart svg{display:block; min-width:280px; max-width:100%; height:auto}
   svg text{fill:var(--text); font:12px ui-sans-serif,system-ui,sans-serif}
   svg .ax{fill:var(--muted); font-size:11px}
   svg .grid-l{stroke:var(--grid); stroke-width:1}
   svg .anot{fill:var(--muted); font-size:11px; font-style:italic}
+  svg .tit{font-weight:600}
+  .legenda{display:flex; flex-wrap:wrap; gap:14px; font-size:.8rem; color:var(--muted); margin-top:8px}
+  .legenda i{display:inline-block; width:11px; height:11px; border-radius:2px; margin-right:5px; vertical-align:-1px}
 
-  /* ---------- tabelas ---------- */
   .tw{overflow-x:auto; margin:0 0 12px}
   table{border-collapse:collapse; width:100%; font-size:.88rem; min-width:520px}
   th,td{text-align:left; padding:8px 10px; border-bottom:1px solid var(--border); vertical-align:top}
@@ -89,18 +81,14 @@
   td.n{text-align:right; font-variant-numeric:tabular-nums}
   .sim{color:var(--ok); font-weight:650} .nao{color:var(--bad); font-weight:650}
 
-  /* ---------- anexo ---------- */
   details{background:var(--surface); border:1px solid var(--border); border-radius:6px; margin:0 0 12px}
   details>summary{cursor:pointer; padding:14px 18px; font-weight:600; list-style:none}
   details>summary::-webkit-details-marker{display:none}
   details>summary::before{content:"▸ "; color:var(--muted)}
   details[open]>summary::before{content:"▾ "}
   .details-body{padding:0 18px 18px}
-  pre{
-    background:var(--bg); border:1px solid var(--border); border-radius:4px;
-    padding:12px 14px; overflow-x:auto; font:12.5px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
-    margin:8px 0;
-  }
+  pre{background:var(--bg); border:1px solid var(--border); border-radius:4px; padding:12px 14px;
+    overflow-x:auto; font:12.5px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; margin:8px 0}
   .q{border-top:1px solid var(--border); padding:16px 0 4px}
   .q:first-of-type{border-top:0}
   .q-id{font:650 .82rem/1 ui-monospace,monospace; color:var(--accent)}
@@ -112,10 +100,7 @@
 <body>
 <div class="wrap">
 
-<!-- ============================================================
-     1. CABEÇALHO
-     Timestamp OBTIDO DO SISTEMA (date / Get-Date). Nunca de memória.
-     ============================================================ -->
+<!-- 1. CABEÇALHO — timestamp OBTIDO DO SISTEMA (date / Get-Date), nunca de memória -->
 <header>
   <h1>[TÍTULO DA INVESTIGAÇÃO]</h1>
   <p class="duvida"><b>Dúvida investigada:</b> [a pergunta da primeira mensagem, literal]</p>
@@ -123,91 +108,53 @@
     <span class="chip">Gerado em <b>[AAAA-MM-DD HH:MM]</b></span>
     <span class="chip"><b>v[N]</b></span>
     <span class="chip">[N] consultas</span>
-    <!-- .selo.parcial quando houver linha não verificada -->
-    <span class="chip selo">[X]/[T] números críticos verificados</span>
+    <span class="chip selo" id="selo"></span>
   </div>
-  <!-- só quando houver versão anterior: -->
   <p class="small muted" style="margin:10px 0 0">v[N]: [o que mudou desde a versão anterior]</p>
 </header>
 
-<!-- ============================================================
-     2. RESPOSTA DIRETA — antes de qualquer gráfico
-     ============================================================ -->
+<!-- 2. RESPOSTA DIRETA — antes de qualquer gráfico -->
 <div class="resposta">
-  <span class="num" data-n="principal"></span>
+  <span class="num" id="num-principal"></span>
   <p style="margin:8px 0 0">[a resposta à dúvida inicial em até três frases]</p>
-  <p class="fonte">Fonte: <b>[#N]</b> · verificado por <b>[#M]</b></p>
+  <p class="fonte" id="fonte-principal"></p>
 </div>
 
-<!-- ============================================================
-     3. COMO CHEGUEI AQUI
-     ============================================================ -->
+<!-- 3. COMO CHEGUEI AQUI -->
 <h2>Como cheguei aqui</h2>
 <div class="card">
-  <p>[3 a 5 linhas: quantas consultas, quais ângulos foram tentados, o que foi
-  descartado no caminho e por quê. É o que mostra que houve investigação, não uma query.]</p>
+  <p>[3 a 5 linhas: quantas consultas, quais ângulos foram tentados, o que foi descartado
+  e por quê. É o que mostra que houve investigação, não uma query.]</p>
 </div>
 
-<!-- ============================================================
-     4. ACHADOS — um bloco por padrão, ordenados por confiança
-     ============================================================ -->
+<!-- 4. ACHADOS — renderizados de DADOS.achados, ordenados por confiança -->
 <h2>Achados</h2>
+<div id="achados"></div>
 
-<div class="card">
-  <div class="head-achado">
-    <h3>[afirmação do achado, em uma frase]</h3>
-    <span class="conf alta">confiança alta</span>
-  </div>
-  <div class="chart" id="g-serie"></div>
-  <p class="leitura">[o que se enxerga neste gráfico, em uma ou duas frases]</p>
-  <p class="fonte">N: [3.140 clientes distintos] · janela: [2025-05-01 a 2025-07-31] · fonte: <b>[#N]</b></p>
-</div>
-
-<div class="card">
-  <div class="head-achado">
-    <h3>[segundo achado]</h3>
-    <span class="conf media">confiança média</span>
-  </div>
-  <div class="chart" id="g-barras"></div>
-  <p class="leitura">[leitura]</p>
-  <p class="fonte">N: [...] · janela: [...] · fonte: <b>[#N]</b></p>
-</div>
-
-<!-- ============================================================
-     5. FUNIL — só quando a dúvida envolver percurso com etapas
-     Mesma unidade em todas as etapas · coorte fechada
-     ============================================================ -->
-<h2>Funil</h2>
-<div class="card">
+<!-- 5. FUNIL — só quando a dúvida envolver percurso com etapas -->
+<h2 id="h-funil">Funil</h2>
+<div class="card" id="card-funil">
   <div class="chart" id="g-funil"></div>
   <p class="leitura">[onde está a maior perda, e o que isso significa]</p>
   <p class="fonte">Coorte fechada: [quem entrou entre X e Y, com ≥ D dias para percorrer] · fonte: <b>[#N]</b></p>
 </div>
 
-<!-- ============================================================
-     6. COMPARAÇÃO DE GRUPOS — mesmas métricas nas mesmas posições
-     ============================================================ -->
+<!-- 6. COMPARAÇÃO DE GRUPOS — mesmas métricas nas mesmas posições -->
 <h2>Grupo com o comportamento × público estimulável</h2>
 <div class="grid2">
   <div class="card">
     <h3>[grupo onde o comportamento ocorre]</h3>
-    <div class="tw"><table>
-      <tbody id="cmp-a"></tbody>
-    </table></div>
+    <div class="tw"><table><tbody id="cmp-a"></tbody></table></div>
     <p class="fonte">fonte: <b>[#N]</b></p>
   </div>
   <div class="card">
     <h3>[público estimulável]</h3>
-    <div class="tw"><table>
-      <tbody id="cmp-b"></tbody>
-    </table></div>
+    <div class="tw"><table><tbody id="cmp-b"></tbody></table></div>
     <p class="fonte">fonte: <b>[#N]</b></p>
   </div>
 </div>
 
-<!-- ============================================================
-     7. OPORTUNIDADES — um card por público estimulável
-     ============================================================ -->
+<!-- 7. OPORTUNIDADES — um card por público estimulável -->
 <h2>Oportunidades</h2>
 <div class="card">
   <div class="head-achado">
@@ -227,9 +174,7 @@
   </tbody></table></div>
 </div>
 
-<!-- ============================================================
-     8. REFUTADO
-     ============================================================ -->
+<!-- 8. REFUTADO -->
 <h2>O que foi refutado no caminho</h2>
 <div class="card">
   <div class="tw"><table>
@@ -238,9 +183,7 @@
   </table></div>
 </div>
 
-<!-- ============================================================
-     9. LIMITAÇÕES
-     ============================================================ -->
+<!-- 9. LIMITAÇÕES -->
 <h2>Limitações</h2>
 <div class="card">
   <ul>
@@ -251,9 +194,7 @@
   </ul>
 </div>
 
-<!-- ============================================================
-     10. GLOSSÁRIO — toda métrica e toda sigla usada no corpo
-     ============================================================ -->
+<!-- 10. GLOSSÁRIO -->
 <h2>Glossário</h2>
 <div class="card">
   <div class="tw"><table>
@@ -262,16 +203,13 @@
   </table></div>
 </div>
 
-<!-- ============================================================
-     11. ANEXO DE AUDITORIA — gerado ANTES do corpo, recolhido aqui
-     ============================================================ -->
+<!-- 11. ANEXO DE AUDITORIA — gerado ANTES do corpo, recolhido aqui -->
 <h2>Anexo de auditoria</h2>
 
 <details>
-  <summary>Verificação dos números críticos — [X]/[T]</summary>
+  <summary id="sum-gate">Verificação dos números críticos</summary>
   <div class="details-body">
-    <pre>trilha-[AAAA-MM-DD].md — [N] blocos, [X] sem SQL
-T = 1 (dúvida inicial) + [P] públicos + [Q] padrões + [D] derivados = [T]</pre>
+    <pre id="controle"></pre>
     <div class="tw"><table>
       <thead><tr>
         <th>#</th><th>Número crítico</th><th># orig.</th><th class="n">Original</th>
@@ -279,32 +217,29 @@ T = 1 (dúvida inicial) + [P] públicos + [Q] padrões + [D] derivados = [T]</pr
       </tr></thead>
       <tbody id="gate"></tbody>
     </table></div>
+    <p class="small muted">Limiar: delta acima de 3% é NÃO. Número que deveria fechar exato é NÃO em qualquer delta.</p>
   </div>
 </details>
 
 <details>
-  <summary>Trilha de consultas — [N] consultas</summary>
+  <summary id="sum-trilha">Trilha de consultas</summary>
   <div class="details-body" id="trilha"></div>
 </details>
 
 <details>
   <summary>Tabelas e fontes consultadas</summary>
-  <div class="details-body">
-    <div class="tw"><table>
-      <thead><tr><th>Tabela</th><th>O que representa</th><th>Granularidade</th><th>Período coberto</th></tr></thead>
-      <tbody id="fontes"></tbody>
-    </table></div>
-  </div>
+  <div class="details-body"><div class="tw"><table>
+    <thead><tr><th>Tabela</th><th>O que representa</th><th>Granularidade</th><th>Período coberto</th></tr></thead>
+    <tbody id="fontes"></tbody>
+  </table></div></div>
 </details>
 
 <details>
   <summary>Mapa conclusão → fonte</summary>
-  <div class="details-body">
-    <div class="tw"><table>
-      <thead><tr><th>Conclusão na entrega</th><th>Blocos que a sustentam</th></tr></thead>
-      <tbody id="mapa"></tbody>
-    </table></div>
-  </div>
+  <div class="details-body"><div class="tw"><table>
+    <thead><tr><th>Conclusão na entrega</th><th>Blocos que a sustentam</th></tr></thead>
+    <tbody id="mapa"></tbody>
+  </table></div></div>
 </details>
 
 <footer>
@@ -316,98 +251,211 @@ T = 1 (dúvida inicial) + [P] públicos + [Q] padrões + [D] derivados = [T]</pr
 
 <script>
 /* ================================================================
-   DADOS — único lugar onde números aparecem.
-   Cada entrada carrega o # do bloco da trilha que a originou.
-   Número digitado no markup diverge na terceira repetição; aqui, não.
+   DADOS — único lugar onde números aparecem. Cada entrada carrega o #
+   do bloco da trilha que a originou. Número digitado no markup diverge
+   na terceira repetição; aqui, não.
+
+   Cada achado escolhe seu gráfico pelo campo `tipo`. Dez formas
+   disponíveis — a tabela de referencia-entrega.md diz qual usar para
+   qual pergunta. Barras é a forma para comparar segmentos, não o
+   padrão para tudo.
+
+     serie       linha no tempo, com anotação no ponto de inflexão
+     multiserie  várias linhas no tempo — a checagem de composição da fase 5
+     barras      comparação entre segmentos, ordenada por valor
+     pareadas    antes e depois do mesmo grupo, poucos grupos
+     slopegraph  antes e depois, muitos grupos — mostra quem cruzou
+     histograma  distribuição; destaca os 5% das bordas da fase 3
+     area100     composição no tempo, em percentual
+     scatter     duas métricas por segmento
+     pizza       só com 2 ou 3 fatias, quando somar 100% for o ponto
+     funil       percurso com etapas e perda entre elas
    ================================================================ */
 const DADOS = {
 
-  principal: { valor: "23,4%", fonte: "#14" },
+  principal: { valor: "23,4%", fonte: "#14", verificado: "#41" },
 
-  // Série temporal. anotacoes marca o evento que explica a inflexão.
-  // parcial:true marca coorte incompleta (não fechou a janela da métrica).
-  serie: {
-    titulo: "Taxa de resposta por mês",
-    unidade: "%",
-    fonte: "#18",
-    pontos: [
-      { x:"jan", y:21.2 }, { x:"fev", y:22.0 }, { x:"mar", y:21.8 },
-      { x:"abr", y:22.4 }, { x:"mai", y:26.9 }, { x:"jun", y:28.1 },
-      { x:"jul", y:27.6, parcial:true }
-    ],
-    anotacoes: [ { x:"mai", texto:"parada da aquisição paga" } ]
-  },
+  achados: [
+    {
+      titulo: "A taxa de resposta subiu 6 pontos no trimestre",
+      confianca: "alta",
+      leitura: "A inflexão coincide com a parada da aquisição paga, não com a mudança de copy — ver o achado de composição abaixo.",
+      n: "3.140 clientes distintos", janela: "2025-01 a 2025-07", fonte: "#18",
+      grafico: {
+        tipo: "serie", titulo: "Taxa de resposta por mês", unidade: "%",
+        pontos: [
+          { x:"jan", y:21.2 }, { x:"fev", y:22.0 }, { x:"mar", y:21.8 },
+          { x:"abr", y:22.4 }, { x:"mai", y:26.9 }, { x:"jun", y:28.1 },
+          { x:"jul", y:27.6, parcial:true }
+        ],
+        anotacoes: [ { x:"mai", texto:"parada da aquisição paga" } ]
+      }
+    },
+    {
+      titulo: "Dentro de cada canal, a taxa caiu — o agregado subiu por mix",
+      confianca: "alta",
+      leitura: "Paradoxo de Simpson: o orgânico sempre respondeu mais, e passou a dominar a base. Investir no copy novo seria investir no que piorou.",
+      n: "48.210 clientes distintos", janela: "2025-01 a 2025-06", fonte: "#34",
+      grafico: {
+        tipo: "multiserie", titulo: "Taxa de resposta por canal de aquisição", unidade: "%",
+        eixoX: ["jan","fev","mar","abr","mai","jun"],
+        series: [
+          { rotulo:"Orgânico", valores:[30.1,29.8,29.4,29.0,28.6,28.4] },
+          { rotulo:"Pago",     valores:[8.4,8.2,8.0,7.6,7.1,6.9] },
+          { rotulo:"Agregado", valores:[21.2,22.0,21.8,22.4,26.9,28.1], destaque:true }
+        ],
+        anotacoes: [ { x:"mai", texto:"parada da aquisição paga" } ]
+      }
+    },
+    {
+      titulo: "A abertura cai por faixa de inatividade, com quebra entre 90 e 180 dias",
+      confianca: "alta",
+      leitura: "A queda não é linear: entre 61–90 e 91–180 dias a taxa cai 9 pontos de uma vez. É onde a reativação deixa de funcionar.",
+      n: "66.260 clientes distintos", janela: "2025-05 a 2025-07", fonte: "#23",
+      grafico: {
+        tipo: "barras", titulo: "Taxa de abertura por faixa de inatividade", unidade: "%",
+        itens: [
+          { rotulo:"30–60 dias",    valor:31.4, n:"12.480 clientes" },
+          { rotulo:"61–90 dias",    valor:24.1, n:"9.320 clientes" },
+          { rotulo:"91–180 dias",   valor:14.8, n:"18.940 clientes" },
+          { rotulo:"180+ dias",     valor:6.2,  n:"22.110 clientes" },
+          { rotulo:"não informado", valor:19.0, n:"3.410 clientes" }
+        ]
+      }
+    },
+    {
+      titulo: "Os 5% mais ativos concentram 41% das conversões",
+      confianca: "media",
+      leitura: "A média esconde a concentração. O grupo da borda direita não precisa de estímulo — ele já converte; a oportunidade está na faixa central.",
+      n: "48.210 clientes distintos", janela: "2025-07", fonte: "#27",
+      grafico: {
+        tipo: "histograma", titulo: "Distribuição de eventos por cliente no mês", unidade: " eventos",
+        faixas: [
+          { rotulo:"0–2",   valor:18420 }, { rotulo:"3–5",   valor:12980 },
+          { rotulo:"6–10",  valor:8740 },  { rotulo:"11–20", valor:5210 },
+          { rotulo:"21–40", valor:2450 },  { rotulo:"41+",   valor:410 }
+        ],
+        bordas: { esquerda:1, direita:1 }
+      }
+    },
+    {
+      titulo: "Quem recebeu a campanha manteve a taxa; o controle caiu",
+      confianca: "media",
+      leitura: "Antes e depois do mesmo grupo. O efeito é a diferença entre as duas inclinações, não o nível final de cada uma.",
+      n: "17.880 clientes distintos", janela: "jun × jul 2025", fonte: "#38",
+      grafico: {
+        tipo: "pareadas", titulo: "Taxa de conversão antes × depois", unidade: "%",
+        rotuloA: "Junho", rotuloB: "Julho",
+        grupos: [
+          { rotulo:"Tratamento", a:12.1, b:12.4 },
+          { rotulo:"Controle",   a:11.8, b:9.2 }
+        ]
+      }
+    },
+    {
+      titulo: "Três planos inverteram posição entre os trimestres",
+      confianca: "baixa",
+      leitura: "Amostra pequena por plano; serve como hipótese para a próxima investigação, não como conclusão.",
+      n: "2.140 clientes distintos", janela: "Q1 × Q2 2025", fonte: "#44",
+      grafico: {
+        tipo: "slopegraph", titulo: "Retenção D30 por plano", unidade: "%",
+        rotuloA: "Q1", rotuloB: "Q2",
+        grupos: [
+          { rotulo:"Starter",    a:22.0, b:31.5 },
+          { rotulo:"Pro",        a:38.4, b:34.1 },
+          { rotulo:"Business",   a:41.2, b:39.8 },
+          { rotulo:"Enterprise", a:29.6, b:44.0 }
+        ]
+      }
+    },
+    {
+      titulo: "A composição da base mudou de paga para orgânica em dois meses",
+      confianca: "alta",
+      leitura: "É a causa estrutural do achado agregado: a mistura mudou, não o comportamento.",
+      n: "48.210 clientes distintos", janela: "2025-01 a 2025-06", fonte: "#35",
+      grafico: {
+        tipo: "area100", titulo: "Composição da base por canal de aquisição",
+        eixoX: ["jan","fev","mar","abr","mai","jun"],
+        series: [
+          { rotulo:"Orgânico", valores:[42,44,45,48,71,79] },
+          { rotulo:"Pago",     valores:[48,46,45,42,15,7] },
+          { rotulo:"Indicação",valores:[10,10,10,10,14,14] }
+        ]
+      }
+    },
+    {
+      titulo: "Volume de envio não explica taxa de resposta",
+      confianca: "media",
+      leitura: "Sem relação visível entre os dois eixos. O segmento no canto superior esquerdo é o que merece investigação: pouco volume, resposta alta.",
+      n: "9 segmentos", janela: "2025-05 a 2025-07", fonte: "#46",
+      grafico: {
+        tipo: "scatter", titulo: "Volume × taxa de resposta, por segmento",
+        eixoXLabel: "Envios (mil)", eixoYLabel: "Taxa de resposta (%)",
+        pontos: [
+          { rotulo:"A", x:2.1, y:34.0 }, { rotulo:"B", x:4.8, y:12.1 },
+          { rotulo:"C", x:9.2, y:22.4 }, { rotulo:"D", x:12.4, y:19.8 },
+          { rotulo:"E", x:15.1, y:24.2 }, { rotulo:"F", x:6.4, y:28.9 },
+          { rotulo:"G", x:18.9, y:16.2 }, { rotulo:"H", x:3.2, y:21.0 },
+          { rotulo:"I", x:11.0, y:26.4 }
+        ]
+      }
+    },
+    {
+      titulo: "Dois terços da base elegível nunca recebeu a campanha",
+      confianca: "alta",
+      leitura: "Duas fatias que somam o todo — é o caso em que pizza serve.",
+      n: "48.210 clientes distintos", janela: "2025-07", fonte: "#29",
+      grafico: {
+        tipo: "pizza", titulo: "Base elegível por exposição à campanha",
+        fatias: [
+          { rotulo:"Nunca recebeu", valor:33800 },
+          { rotulo:"Recebeu",       valor:14410 }
+        ]
+      }
+    }
+  ],
 
-  // Barras horizontais, ordenadas por valor no render.
-  barras: {
-    titulo: "Taxa de abertura por faixa de inatividade",
-    unidade: "%",
-    fonte: "#23",
-    itens: [
-      { rotulo:"30–60 dias",  valor:31.4, n:"12.480 clientes" },
-      { rotulo:"61–90 dias",  valor:24.1, n:"9.320 clientes" },
-      { rotulo:"91–180 dias", valor:14.8, n:"18.940 clientes" },
-      { rotulo:"180+ dias",   valor:6.2,  n:"22.110 clientes" },
-      { rotulo:"não informado", valor:19.0, n:"3.410 clientes" }
-    ]
-  },
-
-  // Funil. Mesma unidade em todas as etapas. Coorte fechada.
   funil: {
-    titulo: "Jornada da campanha de reativação",
-    unidade: "clientes distintos",
-    fonte: "#29",
+    tipo: "funil", titulo: "Jornada da campanha de reativação", unidade: "clientes distintos",
     etapas: [
-      { rotulo:"Destinatários", valor:48210 },
-      { rotulo:"Entregues",     valor:46880 },
-      { rotulo:"Abriram",       valor:11290 },
-      { rotulo:"Clicaram",      valor:3140 },
-      { rotulo:"Converteram",   valor:812 }
+      { rotulo:"Destinatários", valor:48210 }, { rotulo:"Entregues", valor:46880 },
+      { rotulo:"Abriram", valor:11290 }, { rotulo:"Clicaram", valor:3140 },
+      { rotulo:"Converteram", valor:812 }
     ]
   },
 
-  // Comparação lado a lado: mesmas métricas, mesma ordem nos dois grupos.
   comparacao: {
     a: [ ["Tamanho","8.940 clientes distintos"], ["Taxa de conversão","12,1%"], ["Tempo médio até converter","6 dias"] ],
     b: [ ["Tamanho","33.800 clientes distintos"], ["Taxa de conversão","1,4%"], ["Tempo médio até converter","—"] ]
   },
 
-  refutado: [
-    ["[hipótese descartada]", "[o dado que a derrubou]", "#31"]
-  ],
+  refutado: [ ["[hipótese descartada]", "[o dado que a derrubou]", "#31"] ],
 
   glossario: [
     ["Taxa de resposta", "Respondentes distintos ÷ destinatários distintos, contando um cliente uma vez", "#12"],
     ["Inatividade", "Dias entre o envio e o último evento anterior do cliente — medida na data do envio, nunca contra hoje", "#12"]
   ],
 
-  // Gate da fase 8. bate:false vira NÃO e a conclusão sai ou é rotulada.
+  controle: { arquivo:"trilha-[AAAA-MM-DD].md", blocos:47, semSql:0, T:6, P:1, Q:4, D:1 },
+
   gate: [
     { n:1, metrica:"Taxa de resposta (dúvida inicial)", origem:"#14", valor:"23,4%",
-      verif:"#41", mudou:"outra tabela", valorV:"23,1%", delta:"1,3%", bate:true }
+      verif:"#41", mudou:"outra tabela", valorV:"23,1%", delta:1.3, bate:true },
+    { n:2, metrica:"Tamanho do público estimulável", origem:"#29", valor:"33.800",
+      verif:"#42", mudou:"outra agregação", valorV:"33.640", delta:0.5, bate:true }
   ],
 
-  // Trilha. intencao = o que a consulta foi buscar, não o SQL parafraseado.
   trilha: [
-    {
-      id:"#14", tipo:"Padrão",
+    { id:"#14", tipo:"Padrão",
       intencao:"Medir a taxa de resposta da campanha de reativação no trimestre, por faixa de inatividade",
-      sql:"SELECT ...",
-      tabelas:"crm.campanha_envio, crm.evento_resposta",
-      periodo:"2025-05-01 a 2025-07-31 (sent_at)",
-      unidade:"um cliente distinto por linha",
+      sql:"SELECT ...", tabelas:"crm.campanha_envio, crm.evento_resposta",
+      periodo:"2025-05-01 a 2025-07-31 (sent_at)", unidade:"um cliente distinto por linha",
       nAmostra:"8.412 envios / 3.140 clientes distintos",
-      retorno:"taxa 23,4% — 1.968 aberturas em 8.412 envios"
-    }
+      retorno:"taxa 23,4% — 1.968 aberturas em 8.412 envios" }
   ],
 
-  fontes: [
-    ["crm.campanha_envio", "Um registro por envio de campanha", "envio", "2024-01-01 a 2025-08-07"]
-  ],
-
-  mapa: [
-    ["[conclusão da entrega]", "#14, #23, #41"]
-  ]
+  fontes: [ ["crm.campanha_envio","Um registro por envio de campanha","envio","2024-01-01 a 2025-08-07"] ],
+  mapa:   [ ["[conclusão da entrega]","#14, #23, #41"] ]
 };
 
 /* ================================================================
@@ -416,47 +464,48 @@ const DADOS = {
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const fmt = v => v.toLocaleString('pt-BR');
-const pct = v => v.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+'%';
+const dec = (v,d=1) => v.toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});
+const pct = v => dec(v)+'%';
+const CORES = ['var(--c1)','var(--c2)','var(--c3)','var(--c4)','var(--c5)','var(--c6)'];
 const SVGNS = 'http://www.w3.org/2000/svg';
 
-function svg(w, h){
-  const s = document.createElementNS(SVGNS,'svg');
-  s.setAttribute('viewBox', `0 0 ${w} ${h}`);
-  s.setAttribute('width', w); s.setAttribute('height', h);
-  s.setAttribute('role','img');
-  return s;
+function svg(w,h){
+  const s=document.createElementNS(SVGNS,'svg');
+  s.setAttribute('viewBox',`0 0 ${w} ${h}`); s.setAttribute('width',w); s.setAttribute('height',h);
+  s.setAttribute('role','img'); return s;
 }
-function el(tag, attrs, text){
-  const e = document.createElementNS(SVGNS, tag);
-  for (const k in attrs) e.setAttribute(k, attrs[k]);
-  if (text != null) e.textContent = text;
-  return e;
+function el(tag,attrs,text){
+  const e=document.createElementNS(SVGNS,tag);
+  for(const k in attrs) e.setAttribute(k,attrs[k]);
+  if(text!=null) e.textContent=text; return e;
 }
-
-/* Série temporal: linha + anotação no ponto de inflexão + marca de coorte parcial */
-function serieTemporal(host, d){
-  const W=680, H=300, ml=48, mr=16, mt=34, mb=42;
-  const iw=W-ml-mr, ih=H-mt-mb;
-  const ys=d.pontos.map(p=>p.y), ymax=Math.max(...ys)*1.15, ymin=0;
-  const X=i=>ml+(d.pontos.length===1?iw/2:i*iw/(d.pontos.length-1));
-  const Y=v=>mt+ih-((v-ymin)/(ymax-ymin))*ih;
-  const s=svg(W,H);
-  s.appendChild(el('title',{},d.titulo));
-  s.appendChild(el('text',{x:ml,y:18,style:'font-weight:600'},d.titulo));
-
-  for(let t=0;t<=4;t++){
-    const v=ymin+(ymax-ymin)*t/4, y=Y(v);
+function titulo(s,t,x=0){ s.appendChild(el('title',{},t)); s.appendChild(el('text',{x,y:18,class:'tit'},t)); }
+function eixoY(s,ml,mr,W,mt,ih,min,max,suf,passos=4){
+  for(let t=0;t<=passos;t++){
+    const v=min+(max-min)*t/passos, y=mt+ih-((v-min)/(max-min))*ih;
     s.appendChild(el('line',{x1:ml,x2:W-mr,y1:y,y2:y,class:'grid-l'}));
-    s.appendChild(el('text',{x:ml-8,y:y+4,'text-anchor':'end',class:'ax'},v.toFixed(0)+d.unidade));
+    s.appendChild(el('text',{x:ml-8,y:y+4,'text-anchor':'end',class:'ax'},dec(v,0)+(suf||'')));
   }
-  // segmento sólido até o último ponto fechado; tracejado no parcial
-  const firstPartial=d.pontos.findIndex(p=>p.parcial);
-  const cut=firstPartial===-1?d.pontos.length:firstPartial;
-  const path=a=>a.map((p,i)=>`${i?'L':'M'}${X(p.i)},${Y(p.y)}`).join(' ');
+}
+function legenda(host,itens){
+  const d=document.createElement('div'); d.className='legenda';
+  d.innerHTML=itens.map((it,i)=>`<span><i style="background:${it.cor||CORES[i%6]}"></i>${esc(it.rotulo)}</span>`).join('');
+  host.appendChild(d);
+}
+function marcaParcial(s,ml,H){ s.appendChild(el('text',{x:ml,y:H-4,class:'ax'},'* coorte incompleta — a métrica ainda não fechou')); }
+
+/* --- serie: uma linha no tempo, com anotação --- */
+function gSerie(host,d){
+  const W=680,H=300,ml=50,mr=16,mt=34,mb=44, iw=W-ml-mr, ih=H-mt-mb;
+  const max=Math.max(...d.pontos.map(p=>p.y))*1.15;
+  const X=i=>ml+(d.pontos.length===1?iw/2:i*iw/(d.pontos.length-1));
+  const Y=v=>mt+ih-(v/max)*ih;
+  const s=svg(W,H); titulo(s,d.titulo,ml); eixoY(s,ml,mr,W,mt,ih,0,max,d.unidade);
   const idx=d.pontos.map((p,i)=>({...p,i}));
+  const cut=idx.findIndex(p=>p.parcial)===-1?idx.length:idx.findIndex(p=>p.parcial);
+  const path=a=>a.map((p,i)=>`${i?'L':'M'}${X(p.i)},${Y(p.y)}`).join(' ');
   s.appendChild(el('path',{d:path(idx.slice(0,cut)),fill:'none',stroke:'var(--c1)','stroke-width':2.5,'stroke-linejoin':'round'}));
   if(cut<idx.length) s.appendChild(el('path',{d:path(idx.slice(cut-1)),fill:'none',stroke:'var(--c1)','stroke-width':2.5,'stroke-dasharray':'5 4',opacity:.6}));
-
   idx.forEach(p=>{
     s.appendChild(el('circle',{cx:X(p.i),cy:Y(p.y),r:p.parcial?3:4,fill:p.parcial?'var(--bg)':'var(--c1)',stroke:'var(--c1)','stroke-width':2}));
     s.appendChild(el('text',{x:X(p.i),y:H-mb+18,'text-anchor':'middle',class:'ax'},p.x+(p.parcial?' *':'')));
@@ -464,92 +513,291 @@ function serieTemporal(host, d){
   (d.anotacoes||[]).forEach(a=>{
     const p=idx.find(q=>q.x===a.x); if(!p) return;
     s.appendChild(el('line',{x1:X(p.i),x2:X(p.i),y1:mt,y2:mt+ih,stroke:'var(--muted)','stroke-width':1,'stroke-dasharray':'3 3',opacity:.7}));
-    const right=p.i < idx.length/2;
-    s.appendChild(el('text',{x:X(p.i)+(right?7:-7),y:mt+13,'text-anchor':right?'start':'end',class:'anot'},'← '+a.texto));
+    const dir=p.i<idx.length/2;
+    s.appendChild(el('text',{x:X(p.i)+(dir?7:-7),y:mt+13,'text-anchor':dir?'start':'end',class:'anot'},'← '+a.texto));
   });
-  if(cut<idx.length) s.appendChild(el('text',{x:ml,y:H-6,class:'ax'},'* coorte incompleta — a métrica ainda não fechou'));
+  if(cut<idx.length) marcaParcial(s,ml,H);
   host.appendChild(s);
 }
 
-/* Barras horizontais, ordenadas por valor */
-function barrasHorizontais(host, d){
+/* --- multiserie: a checagem de composição da fase 5 --- */
+function gMultiserie(host,d){
+  const W=680,mt=34,mb=44,ml=50,mr=90,H=320, iw=W-ml-mr, ih=H-mt-mb;
+  const todos=d.series.flatMap(s=>s.valores), max=Math.max(...todos)*1.15;
+  const X=i=>ml+(d.eixoX.length===1?iw/2:i*iw/(d.eixoX.length-1));
+  const Y=v=>mt+ih-(v/max)*ih;
+  const s=svg(W,H); titulo(s,d.titulo,ml); eixoY(s,ml,mr,W,mt,ih,0,max,d.unidade);
+  d.eixoX.forEach((x,i)=>s.appendChild(el('text',{x:X(i),y:H-mb+18,'text-anchor':'middle',class:'ax'},x)));
+  (d.anotacoes||[]).forEach(a=>{
+    const i=d.eixoX.indexOf(a.x); if(i<0) return;
+    s.appendChild(el('line',{x1:X(i),x2:X(i),y1:mt,y2:mt+ih,stroke:'var(--muted)','stroke-width':1,'stroke-dasharray':'3 3',opacity:.7}));
+    s.appendChild(el('text',{x:X(i)-7,y:mt+13,'text-anchor':'end',class:'anot'},a.texto+' →'));
+  });
+  d.series.forEach((se,k)=>{
+    const cor=CORES[k%6], dash=se.destaque?'':'';
+    s.appendChild(el('path',{d:se.valores.map((v,i)=>`${i?'L':'M'}${X(i)},${Y(v)}`).join(' '),
+      fill:'none',stroke:cor,'stroke-width':se.destaque?3:2,'stroke-dasharray':se.destaque?'6 3':dash,'stroke-linejoin':'round'}));
+    se.valores.forEach((v,i)=>s.appendChild(el('circle',{cx:X(i),cy:Y(v),r:3,fill:cor})));
+    const ly=Y(se.valores[se.valores.length-1]);
+    s.appendChild(el('text',{x:X(se.valores.length-1)+8,y:ly+4,class:'ax',style:`fill:${cor};font-weight:600`},se.rotulo));
+  });
+  host.appendChild(s);
+  legenda(host,d.series.map((se,k)=>({rotulo:se.rotulo+(se.destaque?' (agregado)':''),cor:CORES[k%6]})));
+}
+
+/* --- barras: comparação entre segmentos, ordenada --- */
+function gBarras(host,d){
   const itens=[...d.itens].sort((a,b)=>b.valor-a.valor);
-  const rowH=38, W=680, ml=150, mr=90, mt=34;
-  const H=mt+itens.length*rowH+14, iw=W-ml-mr;
+  const rowH=38,W=680,ml=150,mr=90,mt=34, H=mt+itens.length*rowH+14, iw=W-ml-mr;
   const max=Math.max(...itens.map(i=>i.valor))*1.05;
-  const s=svg(W,H);
-  s.appendChild(el('title',{},d.titulo));
-  s.appendChild(el('text',{x:0,y:18,style:'font-weight:600'},d.titulo));
+  const s=svg(W,H); titulo(s,d.titulo);
   itens.forEach((it,i)=>{
     const y=mt+i*rowH, bw=Math.max(1,(it.valor/max)*iw);
     s.appendChild(el('text',{x:ml-10,y:y+17,'text-anchor':'end',class:'ax'},it.rotulo));
     s.appendChild(el('rect',{x:ml,y:y+4,width:bw,height:20,rx:2,fill:'var(--c1)'}));
-    s.appendChild(el('text',{x:ml+bw+8,y:y+19},it.valor.toLocaleString('pt-BR')+d.unidade));
+    s.appendChild(el('text',{x:ml+bw+8,y:y+19},dec(it.valor)+(d.unidade||'')));
     if(it.n) s.appendChild(el('text',{x:ml,y:y+34,class:'ax'},'n = '+it.n));
   });
   host.appendChild(s);
 }
 
-/* Funil: valor absoluto + taxa de passagem entre degraus + maior perda destacada */
-function funil(host, d){
-  const e=d.etapas, W=680, rowH=62, ml=160, mr=120, mt=34;
-  const H=mt+e.length*rowH+10, iw=W-ml-mr, top=e[0].valor;
-  const passagens=e.map((et,i)=> i===0?null:(et.valor/e[i-1].valor));
-  let worst=-1,worstV=2;
-  passagens.forEach((p,i)=>{ if(p!=null&&p<worstV){worstV=p;worst=i;} });
-  const s=svg(W,H);
-  s.appendChild(el('title',{},d.titulo));
-  s.appendChild(el('text',{x:0,y:18,style:'font-weight:600'},d.titulo));
+/* --- pareadas: antes e depois do mesmo grupo, poucos grupos --- */
+function gPareadas(host,d){
+  const W=680,mt=40,mb=52,ml=50,mr=16,H=300, ih=H-mt-mb;
+  const max=Math.max(...d.grupos.flatMap(g=>[g.a,g.b]))*1.15;
+  const gw=(W-ml-mr)/d.grupos.length, bw=Math.min(52,gw/3.2);
+  const Y=v=>mt+ih-(v/max)*ih;
+  const s=svg(W,H); titulo(s,d.titulo,ml); eixoY(s,ml,mr,W,mt,ih,0,max,d.unidade);
+  d.grupos.forEach((g,i)=>{
+    const cx=ml+gw*i+gw/2;
+    [['a',-1,'var(--c1)',d.rotuloA],['b',1,'var(--c2)',d.rotuloB]].forEach(([k,off,cor])=>{
+      const x=cx+off*bw*0.58-bw/2, v=g[k];
+      s.appendChild(el('rect',{x,y:Y(v),width:bw,height:mt+ih-Y(v),rx:2,fill:cor}));
+      s.appendChild(el('text',{x:x+bw/2,y:Y(v)-6,'text-anchor':'middle',class:'ax'},dec(v)));
+    });
+    s.appendChild(el('text',{x:cx,y:H-mb+20,'text-anchor':'middle',style:'font-weight:600'},g.rotulo));
+    const dif=g.b-g.a;
+    s.appendChild(el('text',{x:cx,y:H-mb+36,'text-anchor':'middle',class:'ax',
+      style:`fill:${dif<0?'var(--bad)':'var(--ok)'}`},(dif>0?'+':'')+dec(dif)+' pp'));
+  });
+  host.appendChild(s);
+  legenda(host,[{rotulo:d.rotuloA,cor:'var(--c1)'},{rotulo:d.rotuloB,cor:'var(--c2)'}]);
+}
+
+/* --- slopegraph: antes e depois, muitos grupos; mostra quem cruzou --- */
+function gSlope(host,d){
+  const W=680,mt=44,mb=30,H=Math.max(280,d.grupos.length*46+mt+mb);
+  const xa=180, xb=W-180, ih=H-mt-mb;
+  const vals=d.grupos.flatMap(g=>[g.a,g.b]);
+  const min=Math.min(...vals)*0.9, max=Math.max(...vals)*1.05;
+  const Y=v=>mt+ih-((v-min)/(max-min))*ih;
+  const s=svg(W,H); titulo(s,d.titulo);
+  s.appendChild(el('text',{x:xa,y:mt-8,'text-anchor':'middle',class:'ax',style:'font-weight:600'},d.rotuloA));
+  s.appendChild(el('text',{x:xb,y:mt-8,'text-anchor':'middle',class:'ax',style:'font-weight:600'},d.rotuloB));
+  s.appendChild(el('line',{x1:xa,x2:xa,y1:mt,y2:mt+ih,class:'grid-l'}));
+  s.appendChild(el('line',{x1:xb,x2:xb,y1:mt,y2:mt+ih,class:'grid-l'}));
+  d.grupos.forEach((g,k)=>{
+    const cor=CORES[k%6], sube=g.b>=g.a;
+    s.appendChild(el('line',{x1:xa,y1:Y(g.a),x2:xb,y2:Y(g.b),stroke:cor,'stroke-width':2.2,
+      'stroke-dasharray':sube?'':'5 3',opacity:.9}));
+    s.appendChild(el('circle',{cx:xa,cy:Y(g.a),r:4,fill:cor}));
+    s.appendChild(el('circle',{cx:xb,cy:Y(g.b),r:4,fill:cor}));
+    s.appendChild(el('text',{x:xa-10,y:Y(g.a)+4,'text-anchor':'end',class:'ax'},`${g.rotulo}  ${dec(g.a)}`));
+    s.appendChild(el('text',{x:xb+10,y:Y(g.b)+4,class:'ax',style:`fill:${cor};font-weight:600`},
+      `${dec(g.b)}  (${g.b>=g.a?'+':''}${dec(g.b-g.a)} pp)`));
+  });
+  s.appendChild(el('text',{x:0,y:H-4,class:'ax'},'linha tracejada = caiu'));
+  host.appendChild(s);
+}
+
+/* --- histograma: distribuição, com as bordas da fase 3 destacadas --- */
+function gHistograma(host,d){
+  const W=680,mt=34,mb=52,ml=50,mr=16,H=300, iw=W-ml-mr, ih=H-mt-mb;
+  const max=Math.max(...d.faixas.map(f=>f.valor))*1.12;
+  const bw=iw/d.faixas.length, be=(d.bordas&&d.bordas.esquerda)||0, bd=(d.bordas&&d.bordas.direita)||0;
+  const total=d.faixas.reduce((a,f)=>a+f.valor,0);
+  const s=svg(W,H); titulo(s,d.titulo,ml); eixoY(s,ml,mr,W,mt,ih,0,max,'');
+  d.faixas.forEach((f,i)=>{
+    const borda=i<be||i>=d.faixas.length-bd;
+    const x=ml+i*bw+2, h=(f.valor/max)*ih;
+    s.appendChild(el('rect',{x,y:mt+ih-h,width:bw-4,height:h,rx:1,
+      fill:borda?'var(--c2)':'var(--c1)',opacity:borda?1:.85}));
+    s.appendChild(el('text',{x:x+(bw-4)/2,y:mt+ih-h-6,'text-anchor':'middle',class:'ax'},fmt(f.valor)));
+    s.appendChild(el('text',{x:x+(bw-4)/2,y:H-mb+18,'text-anchor':'middle',class:'ax'},f.rotulo));
+  });
+  s.appendChild(el('text',{x:ml,y:H-mb+38,class:'ax'},`total: ${fmt(total)}${d.unidade||''} · faixas em laranja: as bordas da distribuição`));
+  host.appendChild(s);
+}
+
+/* --- area100: composição no tempo, em percentual --- */
+function gArea100(host,d){
+  const W=680,mt=34,mb=44,ml=50,mr=16,H=310, iw=W-ml-mr, ih=H-mt-mb;
+  const n=d.eixoX.length, X=i=>ml+(n===1?iw/2:i*iw/(n-1));
+  const totais=d.eixoX.map((_,i)=>d.series.reduce((a,s)=>a+s.valores[i],0));
+  const s=svg(W,H); titulo(s,d.titulo,ml);
+  for(let t=0;t<=4;t++){
+    const y=mt+ih-(t/4)*ih;
+    s.appendChild(el('line',{x1:ml,x2:W-mr,y1:y,y2:y,class:'grid-l'}));
+    s.appendChild(el('text',{x:ml-8,y:y+4,'text-anchor':'end',class:'ax'},(t*25)+'%'));
+  }
+  const acum=new Array(n).fill(0);
+  d.series.forEach((se,k)=>{
+    const base=[...acum];
+    const topo=se.valores.map((v,i)=>{ acum[i]+=v/totais[i]*100; return acum[i]; });
+    const p=[...topo.map((v,i)=>`${i?'L':'M'}${X(i)},${mt+ih-(v/100)*ih}`),
+             ...base.map((v,i)=>`L${X(n-1-i)},${mt+ih-(base[n-1-i]/100)*ih}`)].join(' ')+' Z';
+    s.appendChild(el('path',{d:p,fill:CORES[k%6],opacity:.85}));
+  });
+  d.eixoX.forEach((x,i)=>s.appendChild(el('text',{x:X(i),y:H-mb+18,'text-anchor':'middle',class:'ax'},x)));
+  host.appendChild(s);
+  legenda(host,d.series.map((se,k)=>({rotulo:se.rotulo,cor:CORES[k%6]})));
+}
+
+/* --- scatter: duas métricas por segmento --- */
+function gScatter(host,d){
+  const W=680,mt=34,mb=52,ml=56,mr=20,H=340, iw=W-ml-mr, ih=H-mt-mb;
+  const xs=d.pontos.map(p=>p.x), ys=d.pontos.map(p=>p.y);
+  const xmax=Math.max(...xs)*1.12, ymax=Math.max(...ys)*1.12;
+  const X=v=>ml+(v/xmax)*iw, Y=v=>mt+ih-(v/ymax)*ih;
+  const s=svg(W,H); titulo(s,d.titulo,ml); eixoY(s,ml,mr,W,mt,ih,0,ymax,'');
+  for(let t=0;t<=4;t++){
+    const v=xmax*t/4;
+    s.appendChild(el('text',{x:X(v),y:H-mb+18,'text-anchor':'middle',class:'ax'},dec(v,0)));
+  }
+  d.pontos.forEach(p=>{
+    s.appendChild(el('circle',{cx:X(p.x),cy:Y(p.y),r:6,fill:'var(--c1)',opacity:.8}));
+    s.appendChild(el('text',{x:X(p.x),y:Y(p.y)-10,'text-anchor':'middle',class:'ax'},p.rotulo));
+  });
+  s.appendChild(el('text',{x:ml+iw/2,y:H-mb+38,'text-anchor':'middle',class:'ax'},d.eixoXLabel||''));
+  s.appendChild(el('text',{x:14,y:mt+ih/2,class:'ax',transform:`rotate(-90 14 ${mt+ih/2})`,'text-anchor':'middle'},d.eixoYLabel||''));
+  host.appendChild(s);
+}
+
+/* --- pizza: só com 2 ou 3 fatias --- */
+function gPizza(host,d){
+  const W=680,H=250,cx=130,cy=H/2,r=88;
+  const total=d.fatias.reduce((a,f)=>a+f.valor,0);
+  const s=svg(W,H); titulo(s,d.titulo);
+  if(d.fatias.length>3){
+    s.appendChild(el('text',{x:0,y:44,class:'anot',style:'fill:var(--bad)'},
+      'pizza com mais de 3 fatias: troque por barras horizontais'));
+  }
+  let ang=-Math.PI/2;
+  d.fatias.forEach((f,k)=>{
+    const frac=f.valor/total, a2=ang+frac*Math.PI*2;
+    const big=frac>0.5?1:0;
+    const p=`M${cx},${cy} L${cx+r*Math.cos(ang)},${cy+r*Math.sin(ang)} `+
+            `A${r},${r} 0 ${big} 1 ${cx+r*Math.cos(a2)},${cy+r*Math.sin(a2)} Z`;
+    s.appendChild(el('path',{d:p,fill:CORES[k%6]}));
+    const ly=cy-30+k*46;
+    s.appendChild(el('rect',{x:cx+r+40,y:ly-10,width:11,height:11,rx:2,fill:CORES[k%6]}));
+    s.appendChild(el('text',{x:cx+r+58,y:ly},`${f.rotulo}`));
+    s.appendChild(el('text',{x:cx+r+58,y:ly+18,class:'ax'},`${fmt(f.valor)} · ${pct(frac*100)}`));
+    ang=a2;
+  });
+  host.appendChild(s);
+}
+
+/* --- funil: valor, taxa de passagem entre degraus, maior perda --- */
+function gFunil(host,d){
+  const e=d.etapas,W=680,rowH=62,ml=160,mr=120,mt=34, H=mt+e.length*rowH+12, iw=W-ml-mr, top=e[0].valor;
+  const pass=e.map((et,i)=> i===0?null:(et.valor/e[i-1].valor));
+  let worst=-1,wv=2; pass.forEach((p,i)=>{ if(p!=null&&p<wv){wv=p;worst=i;} });
+  const s=svg(W,H); titulo(s,d.titulo);
   e.forEach((et,i)=>{
-    const y=mt+i*rowH, bw=Math.max(2,(et.valor/top)*iw);
-    const pior=(i===worst);
+    const y=mt+i*rowH, bw=Math.max(2,(et.valor/top)*iw), pior=(i===worst);
     s.appendChild(el('text',{x:ml-10,y:y+20,'text-anchor':'end',style:'font-weight:600'},et.rotulo));
     s.appendChild(el('rect',{x:ml,y:y+4,width:bw,height:26,rx:2,fill:pior?'var(--bad)':'var(--c1)',opacity:pior?.85:1}));
     s.appendChild(el('text',{x:ml+bw+8,y:y+22},fmt(et.valor)));
     s.appendChild(el('text',{x:ml,y:y+46,class:'ax'},pct(et.valor/top*100)+' do topo'));
     if(i>0){
-      const t=pct(passagens[i]*100)+' passou';
-      s.appendChild(el('text',{x:ml-10,y:y+40,'text-anchor':'end',class:'ax',style:pior?'fill:var(--bad);font-weight:650':''}, pior? t+'  ← maior perda' : t));
+      const t=pct(pass[i]*100)+' passou';
+      s.appendChild(el('text',{x:ml-10,y:y+40,'text-anchor':'end',class:'ax',
+        style:pior?'fill:var(--bad);font-weight:650':''}, pior? t+'  ← maior perda' : t));
     }
   });
   s.appendChild(el('text',{x:ml,y:H-2,class:'ax'},'unidade: '+d.unidade));
   host.appendChild(s);
 }
 
-function linhas(tbody, rows){
-  tbody.innerHTML = rows.map(r=>'<tr>'+r.map((c,i)=>
-    i===0 ? `<th style="text-transform:none;font-size:.88rem;color:var(--text)">${esc(c)}</th>`
-          : `<td>${esc(c)}</td>`).join('')+'</tr>').join('');
+/* --- despachante: o campo `tipo` do achado escolhe a forma --- */
+const RENDER = { serie:gSerie, multiserie:gMultiserie, barras:gBarras, pareadas:gPareadas,
+  slopegraph:gSlope, histograma:gHistograma, area100:gArea100, scatter:gScatter,
+  pizza:gPizza, funil:gFunil };
+
+function desenhar(host,g){
+  if(!host||!g) return;
+  const f=RENDER[g.tipo];
+  if(!f){ host.innerHTML=`<p class="small" style="color:var(--bad)">tipo de gráfico desconhecido: ${esc(g.tipo)}</p>`; return; }
+  f(host,g);
 }
 
-document.addEventListener('DOMContentLoaded', ()=>{
-  const p=document.querySelector('[data-n="principal"]');
-  if(p) p.textContent = DADOS.principal.valor;
+function linhas(tbody,rows){
+  if(!tbody) return;
+  tbody.innerHTML=rows.map(r=>'<tr>'+r.map((c,i)=>
+    i===0?`<th style="text-transform:none;font-size:.88rem;color:var(--text)">${esc(c)}</th>`
+         :`<td>${esc(c)}</td>`).join('')+'</tr>').join('');
+}
 
-  if(DADOS.serie)  serieTemporal($('g-serie'), DADOS.serie);
-  if(DADOS.barras) barrasHorizontais($('g-barras'), DADOS.barras);
-  if(DADOS.funil)  funil($('g-funil'), DADOS.funil);
+document.addEventListener('DOMContentLoaded',()=>{
+  /* Chave sem acento: é ela que ordena e que vira classe CSS.
+     O acento aparece só no rótulo. Escrever "média" no campo `confianca`
+     quebra a ordenação e a cor do selo — por isso a normalização abaixo. */
+  const ORD={alta:0,media:1,baixa:2};
+  const LABEL={alta:'alta',media:'média',baixa:'baixa'};
+  const norm=v=>{
+    const k=String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+    return ORD[k]===undefined?'media':k;
+  };
+
+  $('num-principal').textContent=DADOS.principal.valor;
+  $('fonte-principal').innerHTML=`Fonte: <b>${esc(DADOS.principal.fonte)}</b>`+
+    (DADOS.principal.verificado?` · verificado por <b>${esc(DADOS.principal.verificado)}</b>`:'');
+
+  const ok=DADOS.gate.filter(g=>g.bate).length, T=DADOS.gate.length;
+  const selo=$('selo'); selo.textContent=`${ok}/${T} números críticos verificados`;
+  if(ok<T) selo.classList.add('parcial');
+  $('sum-gate').textContent=`Verificação dos números críticos — ${ok}/${T}`;
+  $('sum-trilha').textContent=`Trilha de consultas — ${DADOS.trilha.length} registradas de ${DADOS.controle.blocos}`;
+  const c=DADOS.controle;
+  $('controle').textContent=`${c.arquivo} — ${c.blocos} blocos, ${c.semSql} sem SQL\n`+
+    `T = 1 (dúvida inicial) + ${c.P} públicos + ${c.Q} padrões + ${c.D} derivados = ${c.T}`;
+
+  const host=$('achados');
+  [...DADOS.achados].sort((a,b)=>ORD[norm(a.confianca)]-ORD[norm(b.confianca)]).forEach(a=>{
+    const k=norm(a.confianca);
+    const card=document.createElement('div'); card.className='card';
+    card.innerHTML=`<div class="head-achado"><h3>${esc(a.titulo)}</h3>
+        <span class="conf ${k}">confiança ${LABEL[k]}</span></div>
+      <div class="chart"></div>
+      <p class="leitura">${esc(a.leitura)}</p>
+      <p class="fonte">N: ${esc(a.n)} · janela: ${esc(a.janela)} · gráfico: ${esc(a.grafico.tipo)} · fonte: <b>${esc(a.fonte)}</b></p>`;
+    host.appendChild(card);
+    desenhar(card.querySelector('.chart'),a.grafico);
+  });
+
+  if(DADOS.funil) desenhar($('g-funil'),DADOS.funil);
+  else { $('h-funil').remove(); $('card-funil').remove(); }
 
   if(DADOS.comparacao){ linhas($('cmp-a'),DADOS.comparacao.a); linhas($('cmp-b'),DADOS.comparacao.b); }
-  if(DADOS.refutado)  linhas($('refutado'),  DADOS.refutado);
-  if(DADOS.glossario) linhas($('glossario'), DADOS.glossario);
-  if(DADOS.fontes)    linhas($('fontes'),    DADOS.fontes);
-  if(DADOS.mapa)      linhas($('mapa'),      DADOS.mapa);
+  linhas($('refutado'),DADOS.refutado);
+  linhas($('glossario'),DADOS.glossario);
+  linhas($('fontes'),DADOS.fontes);
+  linhas($('mapa'),DADOS.mapa);
 
-  $('gate').innerHTML = DADOS.gate.map(g=>`<tr>
+  $('gate').innerHTML=DADOS.gate.map(g=>`<tr>
     <td class="n">${g.n}</td><td>${esc(g.metrica)}</td><td>${esc(g.origem)}</td>
     <td class="n">${esc(g.valor)}</td><td>${esc(g.verif)}</td><td>${esc(g.mudou)}</td>
-    <td class="n">${esc(g.valorV)}</td><td class="n">${esc(g.delta)}</td>
+    <td class="n">${esc(g.valorV)}</td><td class="n">${dec(g.delta)}%</td>
     <td class="${g.bate?'sim':'nao'}">${g.bate?'SIM':'NÃO'}</td></tr>`).join('');
 
-  $('trilha').innerHTML = DADOS.trilha.map(q=>`<div class="q">
+  $('trilha').innerHTML=DADOS.trilha.map(q=>`<div class="q">
     <span class="q-id">${esc(q.id)}</span> <span class="q-meta">· ${esc(q.tipo)}</span>
     <p class="q-intent">${esc(q.intencao)}</p>
     <pre>${esc(q.sql)}</pre>
     <p class="q-meta">tabelas: ${esc(q.tabelas)} · período: ${esc(q.periodo)}
       · unidade: ${esc(q.unidade)} · n: ${esc(q.nAmostra)}</p>
-    <p class="q-meta">retorno: ${esc(q.retorno)}</p>
-  </div>`).join('');
+    <p class="q-meta">retorno: ${esc(q.retorno)}</p></div>`).join('');
 });
 </script>
 </body>

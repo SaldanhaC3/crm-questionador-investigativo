@@ -1,4 +1,4 @@
-# Referência de entrega
+﻿# Referência de entrega
 
 Lida na fase 8, antes de montar qualquer entrega. Define a estrutura fixa, a escolha de gráfico, o versionamento e como explicar métricas, siglas e queries. É daqui que vem a consistência entre entregas: mesma dúvida investigada duas vezes deve produzir dois arquivos com o mesmo esqueleto.
 
@@ -56,18 +56,28 @@ No documento de texto, as mesmas onze seções na mesma ordem.
 
 ## 3. Gráficos: qual usar para qual pergunta
 
-Regra que vem antes de todas: **gráfico entra quando responde melhor que o texto sozinho responderia.** Gráfico decorativo dilui os que importam. Uma entrega com quatro gráficos que explicam vale mais que uma com doze.
+Duas regras que vêm antes de todas:
 
-| A pergunta é sobre | Use | Não use |
+**Gráfico entra quando responde melhor que o texto sozinho responderia.** Gráfico decorativo dilui os que importam. Uma entrega com quatro gráficos que explicam vale mais que uma com doze.
+
+**Barras é a forma para comparar segmentos, não o padrão para tudo.** Cair em barras por falta de escolha é o erro mais comum e o mais invisível — o gráfico fica legível e responde a pergunta errada. A pergunta define a forma; a tabela abaixo é o mapeamento, e a coluna `tipo` é literalmente o campo que você preenche em `DADOS.achados[].grafico.tipo` no template.
+
+| A pergunta é sobre | `tipo` | Não use |
 |---|---|---|
-| Variação ao longo do tempo | Série temporal (linha), com o evento anotado no ponto de inflexão | Barras por mês, tabela de meses |
-| Comparação entre segmentos | Barras horizontais ordenadas por valor | Pizza, barras verticais com rótulo girado |
-| Percurso com etapas e perda entre elas | Funil, com a taxa de passagem em cada degrau | Barras soltas por etapa |
-| Antes e depois do mesmo grupo | Barras pareadas, ou slopegraph quando forem vários grupos | Duas séries temporais separadas |
-| Distribuição, bordas, concentração | Histograma ou faixas de percentil | Só a média |
-| Composição que muda no tempo | Área empilhada 100%, com no máximo cinco faixas | Pizza por período |
-| Duas métricas por segmento | Scatter, com o eixo declarado | Barras duplas |
-| Dois ou três valores que somam o todo | Aí sim pizza serve | — |
+| Variação ao longo do tempo | `serie` — linha, com o evento anotado no ponto de inflexão | Barras por mês, tabela de meses |
+| A mesma métrica em vários estratos ao longo do tempo — **a checagem de composição da fase 5** | `multiserie` — uma linha por estrato, o agregado tracejado | Um gráfico por estrato, lado a lado |
+| Comparação entre segmentos | `barras` — horizontais, ordenadas por valor | Pizza, barras verticais com rótulo girado |
+| Percurso com etapas e perda entre elas | `funil` — com taxa de passagem em cada degrau | Barras soltas por etapa |
+| Antes e depois do mesmo grupo, poucos grupos | `pareadas` — com a diferença em pp declarada | Duas séries temporais separadas |
+| Antes e depois, muitos grupos, e quem cruzou importa | `slopegraph` | Barras agrupadas |
+| Distribuição, bordas, concentração — **as bordas da fase 3** | `histograma` — com as faixas extremas destacadas | Só a média |
+| Composição que muda no tempo | `area100` — no máximo cinco faixas | Pizza por período |
+| Duas métricas por segmento | `scatter` — com os dois eixos rotulados | Barras duplas |
+| Dois ou três valores que somam o todo | `pizza` — só aqui ela serve | Pizza com quatro fatias ou mais |
+
+O template implementa os dez. Se a pergunta não couber em nenhum, o gráfico provavelmente não é a forma certa — descreva em texto ou tabela e diga por quê.
+
+**Dois tipos existem porque duas fases do fluxo produzem exatamente esse dado:** `multiserie` é o gráfico da checagem de composição (o agregado sobe, os estratos descem — é isso que a linha tracejada mostra), e `histograma` é o gráfico das bordas. Se você rodou a fase 5 e a fase 3, esses dois achados já existem; não os entregue em texto.
 
 **Série temporal é onde o gráfico ganha do texto com mais folga.** Duas exigências:
 
@@ -85,6 +95,8 @@ Regra que vem antes de todas: **gráfico entra quando responde melhor que o text
 - Se houver skill de visualização de dados instalada no ambiente, siga-a para paleta e tipografia; estas regras são sobre qual forma escolher, não sobre cor
 
 **Declare os números uma vez só.** No HTML, todos os dados vivem num bloco `DADOS` no topo do script, cada entrada carregando o `#` de origem, e os gráficos renderizam a partir dele. Número digitado direto no meio do markup aparece duas ou três vezes e diverge na terceira.
+
+**Confiança usa chave sem acento.** No campo `confianca` escreva `alta`, `media` ou `baixa` — sem acento. É essa chave que ordena os achados e que vira classe CSS; escrever `média` quebra a ordenação e a cor do selo. O acento aparece só no rótulo renderizado.
 
 ---
 
@@ -166,6 +178,8 @@ Se a trilha inteira não couber no arquivo, entregue o anexo como arquivo separa
 - [ ] Funil, se houver: mesma unidade em todas as etapas, taxa de passagem entre degraus, coorte fechada
 - [ ] Toda sigla expandida na primeira aparição e no glossário
 - [ ] Toda métrica do glossário com definição operacional, não descrição
+- [ ] Cada gráfico usa o `tipo` que a pergunta pede — barras só para comparar segmentos
+- [ ] Se a fase 5 rodou, a checagem de composição está em `multiserie`; se a fase 3 olhou as bordas, está em `histograma`
 - [ ] Anexo com o SQL de cada consulta e a frase de intenção de cada uma
 - [ ] Limitações declaradas, incluindo as três tentativas que não deram
 - [ ] Nenhuma lista de indivíduos no arquivo; público estimulável entregue como critério ou consulta
