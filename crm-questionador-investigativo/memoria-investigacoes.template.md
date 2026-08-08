@@ -60,7 +60,32 @@ Usados na verificação de sanidade da fase 0.
 
 ---
 
-## 2. Hipóteses refutadas
+### Catálogo de modelos disponíveis
+
+Descoberto no ambiente (API de modelos, config do harness, ou pergunta ao usuário). Nunca escreva um id que não veio de uma dessas fontes. Catálogo muda — registre a data.
+
+| Id exato do modelo | Faixa (topo / meio / base) | Janela de contexto | Descoberto em | Fonte da descoberta |
+|--------------------|---------------------------|--------------------|---------------|---------------------|
+| | | | | |
+
+Controle de esforço disponível no ambiente? ( ) sim, valores: ______  ( ) não
+Subagentes disponíveis? ( ) sim  ( ) não — se não, tudo roda num modelo só
+
+---
+
+## 2. Glossário de métricas e siglas
+
+Cada termo definido uma vez, operacionalmente, e reusado literal em toda delegação. É o que impede o mesmo conceito de ser consultado de dois jeitos e os números deixarem de ser comparáveis. Vai inteiro para a entrega.
+
+| Termo ou sigla | Definição operacional | Tabela / coluna de origem | `#` | Proxy? |
+|----------------|-----------------------|---------------------------|-----|--------|
+| | | | | |
+
+Na coluna Proxy, marque quando a coluna disponível não é exatamente o conceito — e a entrega passa a escrever o nome da coluna, não o nome do conceito.
+
+---
+
+## 3. Hipóteses refutadas
 
 Antes de testar hipótese nova, verifique se ela já está aqui. Se estiver, só reteste com justificativa explícita: mudou o produto, mudou o período, mudou o segmento.
 
@@ -70,7 +95,7 @@ Antes de testar hipótese nova, verifique se ela já está aqui. Se estiver, só
 
 ---
 
-## 3. Resultados de experimentos executados
+## 4. Resultados de experimentos executados
 
 O dado mais valioso deste arquivo: experimento controlado é o único dado causal disponível, todo o resto é observacional. Hipótese confirmada aqui vira conhecimento causal estabelecido e pesa mais que qualquer correlação em investigações futuras.
 
@@ -80,10 +105,10 @@ O dado mais valioso deste arquivo: experimento controlado é o único dado causa
 
 ---
 
-## 4. Histórico de investigações
+## 5. Histórico de investigações
 
 Índice curto pra achar o que já foi feito e não repetir.
 
-| Data | Dúvida inicial | Calibração | Onde está a entrega | Achado principal |
-|------|----------------|------------|---------------------|------------------|
-| | | | | |
+| Data | Dúvida inicial | Calibração | Entrega (arquivo + versão) | Trilha | Achado principal |
+|------|----------------|------------|----------------------------|--------|------------------|
+| | | | | | |

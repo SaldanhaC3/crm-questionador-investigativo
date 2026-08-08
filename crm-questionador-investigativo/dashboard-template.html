@@ -1,0 +1,556 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- TÍTULO: troque pelo título curto da investigação -->
+<title>[TÍTULO DA INVESTIGAÇÃO]</title>
+<style>
+  /* ---------- tema ---------- */
+  :root{
+    --bg:#fbfbfa; --surface:#fff; --border:#e3e2df; --text:#1b1b19; --muted:#6b6a66;
+    --accent:#2f5f8a; --ok:#2e7d5b; --warn:#a86b1f; --bad:#a83232;
+    --c1:#2f5f8a; --c2:#7a9cb8; --c3:#c9a227; --c4:#6b8f71; --c5:#9c6b8e; --grid:#eceae6;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#191917; --surface:#212120; --border:#35342f; --text:#eceae6; --muted:#a3a099;
+      --accent:#7fb0d9; --ok:#6cc39a; --warn:#d9a95c; --bad:#e08a8a;
+      --c1:#7fb0d9; --c2:#4b7295; --c3:#d9bd5c; --c4:#8fb896; --c5:#c194b3; --grid:#2c2b28;
+    }
+  }
+  :root[data-theme="light"]{
+    --bg:#fbfbfa; --surface:#fff; --border:#e3e2df; --text:#1b1b19; --muted:#6b6a66;
+    --accent:#2f5f8a; --ok:#2e7d5b; --warn:#a86b1f; --bad:#a83232;
+    --c1:#2f5f8a; --c2:#7a9cb8; --c3:#c9a227; --c4:#6b8f71; --c5:#9c6b8e; --grid:#eceae6;
+  }
+  :root[data-theme="dark"]{
+    --bg:#191917; --surface:#212120; --border:#35342f; --text:#eceae6; --muted:#a3a099;
+    --accent:#7fb0d9; --ok:#6cc39a; --warn:#d9a95c; --bad:#e08a8a;
+    --c1:#7fb0d9; --c2:#4b7295; --c3:#d9bd5c; --c4:#8fb896; --c5:#c194b3; --grid:#2c2b28;
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font:16px/1.6 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    -webkit-text-size-adjust:100%;
+  }
+  .wrap{max-width:1080px; margin:0 auto; padding:32px 20px 80px}
+  h1{font-size:1.7rem; line-height:1.25; margin:0 0 6px; letter-spacing:-.01em}
+  h2{font-size:1.15rem; margin:44px 0 14px; padding-bottom:8px; border-bottom:1px solid var(--border)}
+  h3{font-size:1rem; margin:0 0 6px}
+  p{margin:0 0 12px} a{color:var(--accent)}
+  .muted{color:var(--muted)} .small{font-size:.85rem}
+
+  /* ---------- cabeçalho ---------- */
+  header{border-bottom:2px solid var(--border); padding-bottom:20px; margin-bottom:8px}
+  .duvida{font-size:1.02rem; color:var(--muted); margin:0 0 14px}
+  .duvida b{color:var(--text); font-weight:600}
+  .meta{display:flex; flex-wrap:wrap; gap:8px; align-items:center; font-size:.85rem}
+  .chip{
+    border:1px solid var(--border); background:var(--surface); color:var(--muted);
+    border-radius:999px; padding:3px 11px; white-space:nowrap;
+  }
+  .chip.selo{border-color:var(--ok); color:var(--ok); font-weight:600}
+  .chip.selo.parcial{border-color:var(--warn); color:var(--warn)}
+
+  /* ---------- resposta ---------- */
+  .resposta{
+    background:var(--surface); border:1px solid var(--border); border-left:3px solid var(--accent);
+    border-radius:6px; padding:18px 20px; margin:24px 0;
+  }
+  .resposta .num{font-size:2rem; font-weight:650; letter-spacing:-.02em; display:block; line-height:1.1}
+
+  /* ---------- blocos ---------- */
+  .card{background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:18px 20px; margin:0 0 16px}
+  .grid2{display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:16px}
+  .leitura{font-size:.92rem; color:var(--muted); margin:10px 0 0; padding-left:10px; border-left:2px solid var(--border)}
+  .fonte{font-size:.78rem; color:var(--muted); margin-top:8px; font-variant-numeric:tabular-nums}
+  .conf{font-size:.72rem; text-transform:uppercase; letter-spacing:.06em; font-weight:650; padding:2px 8px; border-radius:4px; border:1px solid}
+  .conf.alta{color:var(--ok); border-color:var(--ok)}
+  .conf.media{color:var(--warn); border-color:var(--warn)}
+  .conf.baixa{color:var(--bad); border-color:var(--bad)}
+  .head-achado{display:flex; gap:10px; align-items:baseline; justify-content:space-between; flex-wrap:wrap}
+
+  /* ---------- gráficos ---------- */
+  .chart{width:100%; overflow-x:auto}
+  .chart svg{display:block; min-width:280px; max-width:100%; height:auto}
+  svg text{fill:var(--text); font:12px ui-sans-serif,system-ui,sans-serif}
+  svg .ax{fill:var(--muted); font-size:11px}
+  svg .grid-l{stroke:var(--grid); stroke-width:1}
+  svg .anot{fill:var(--muted); font-size:11px; font-style:italic}
+
+  /* ---------- tabelas ---------- */
+  .tw{overflow-x:auto; margin:0 0 12px}
+  table{border-collapse:collapse; width:100%; font-size:.88rem; min-width:520px}
+  th,td{text-align:left; padding:8px 10px; border-bottom:1px solid var(--border); vertical-align:top}
+  th{color:var(--muted); font-weight:600; font-size:.78rem; text-transform:uppercase; letter-spacing:.04em}
+  td.n{text-align:right; font-variant-numeric:tabular-nums}
+  .sim{color:var(--ok); font-weight:650} .nao{color:var(--bad); font-weight:650}
+
+  /* ---------- anexo ---------- */
+  details{background:var(--surface); border:1px solid var(--border); border-radius:6px; margin:0 0 12px}
+  details>summary{cursor:pointer; padding:14px 18px; font-weight:600; list-style:none}
+  details>summary::-webkit-details-marker{display:none}
+  details>summary::before{content:"▸ "; color:var(--muted)}
+  details[open]>summary::before{content:"▾ "}
+  .details-body{padding:0 18px 18px}
+  pre{
+    background:var(--bg); border:1px solid var(--border); border-radius:4px;
+    padding:12px 14px; overflow-x:auto; font:12.5px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    margin:8px 0;
+  }
+  .q{border-top:1px solid var(--border); padding:16px 0 4px}
+  .q:first-of-type{border-top:0}
+  .q-id{font:650 .82rem/1 ui-monospace,monospace; color:var(--accent)}
+  .q-intent{margin:6px 0 0; font-size:.92rem}
+  .q-meta{font-size:.78rem; color:var(--muted); font-variant-numeric:tabular-nums}
+  footer{margin-top:56px; padding-top:16px; border-top:1px solid var(--border); font-size:.8rem; color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- ============================================================
+     1. CABEÇALHO
+     Timestamp OBTIDO DO SISTEMA (date / Get-Date). Nunca de memória.
+     ============================================================ -->
+<header>
+  <h1>[TÍTULO DA INVESTIGAÇÃO]</h1>
+  <p class="duvida"><b>Dúvida investigada:</b> [a pergunta da primeira mensagem, literal]</p>
+  <div class="meta">
+    <span class="chip">Gerado em <b>[AAAA-MM-DD HH:MM]</b></span>
+    <span class="chip"><b>v[N]</b></span>
+    <span class="chip">[N] consultas</span>
+    <!-- .selo.parcial quando houver linha não verificada -->
+    <span class="chip selo">[X]/[T] números críticos verificados</span>
+  </div>
+  <!-- só quando houver versão anterior: -->
+  <p class="small muted" style="margin:10px 0 0">v[N]: [o que mudou desde a versão anterior]</p>
+</header>
+
+<!-- ============================================================
+     2. RESPOSTA DIRETA — antes de qualquer gráfico
+     ============================================================ -->
+<div class="resposta">
+  <span class="num" data-n="principal"></span>
+  <p style="margin:8px 0 0">[a resposta à dúvida inicial em até três frases]</p>
+  <p class="fonte">Fonte: <b>[#N]</b> · verificado por <b>[#M]</b></p>
+</div>
+
+<!-- ============================================================
+     3. COMO CHEGUEI AQUI
+     ============================================================ -->
+<h2>Como cheguei aqui</h2>
+<div class="card">
+  <p>[3 a 5 linhas: quantas consultas, quais ângulos foram tentados, o que foi
+  descartado no caminho e por quê. É o que mostra que houve investigação, não uma query.]</p>
+</div>
+
+<!-- ============================================================
+     4. ACHADOS — um bloco por padrão, ordenados por confiança
+     ============================================================ -->
+<h2>Achados</h2>
+
+<div class="card">
+  <div class="head-achado">
+    <h3>[afirmação do achado, em uma frase]</h3>
+    <span class="conf alta">confiança alta</span>
+  </div>
+  <div class="chart" id="g-serie"></div>
+  <p class="leitura">[o que se enxerga neste gráfico, em uma ou duas frases]</p>
+  <p class="fonte">N: [3.140 clientes distintos] · janela: [2025-05-01 a 2025-07-31] · fonte: <b>[#N]</b></p>
+</div>
+
+<div class="card">
+  <div class="head-achado">
+    <h3>[segundo achado]</h3>
+    <span class="conf media">confiança média</span>
+  </div>
+  <div class="chart" id="g-barras"></div>
+  <p class="leitura">[leitura]</p>
+  <p class="fonte">N: [...] · janela: [...] · fonte: <b>[#N]</b></p>
+</div>
+
+<!-- ============================================================
+     5. FUNIL — só quando a dúvida envolver percurso com etapas
+     Mesma unidade em todas as etapas · coorte fechada
+     ============================================================ -->
+<h2>Funil</h2>
+<div class="card">
+  <div class="chart" id="g-funil"></div>
+  <p class="leitura">[onde está a maior perda, e o que isso significa]</p>
+  <p class="fonte">Coorte fechada: [quem entrou entre X e Y, com ≥ D dias para percorrer] · fonte: <b>[#N]</b></p>
+</div>
+
+<!-- ============================================================
+     6. COMPARAÇÃO DE GRUPOS — mesmas métricas nas mesmas posições
+     ============================================================ -->
+<h2>Grupo com o comportamento × público estimulável</h2>
+<div class="grid2">
+  <div class="card">
+    <h3>[grupo onde o comportamento ocorre]</h3>
+    <div class="tw"><table>
+      <tbody id="cmp-a"></tbody>
+    </table></div>
+    <p class="fonte">fonte: <b>[#N]</b></p>
+  </div>
+  <div class="card">
+    <h3>[público estimulável]</h3>
+    <div class="tw"><table>
+      <tbody id="cmp-b"></tbody>
+    </table></div>
+    <p class="fonte">fonte: <b>[#N]</b></p>
+  </div>
+</div>
+
+<!-- ============================================================
+     7. OPORTUNIDADES — um card por público estimulável
+     ============================================================ -->
+<h2>Oportunidades</h2>
+<div class="card">
+  <div class="head-achado">
+    <h3>[nome da oportunidade]</h3>
+    <span class="conf alta">confiança alta</span>
+  </div>
+  <div class="tw"><table><tbody>
+    <tr><th>Padrão observado</th><td>[...] <b>[#N]</b></td></tr>
+    <tr><th>Hipótese causal</th><td>[sobrevivente à fase 5]</td></tr>
+    <tr><th>Correlação ou causa</th><td>[declarar qual]</td></tr>
+    <tr><th>Público estimulável</th><td>[N usuários distintos] <b>[#N]</b></td></tr>
+    <tr><th>Diferença endereçável</th><td>[...]</td></tr>
+    <tr><th>Estímulo proposto</th><td>[canal, mensagem, oferta, timing]</td></tr>
+    <tr><th>Grupo controle</th><td>[...]</td></tr>
+    <tr><th>Métrica de sucesso</th><td>[primária única] · janela de leitura: [...]</td></tr>
+    <tr><th>O que invalidaria</th><td>[riscos de contaminação]</td></tr>
+  </tbody></table></div>
+</div>
+
+<!-- ============================================================
+     8. REFUTADO
+     ============================================================ -->
+<h2>O que foi refutado no caminho</h2>
+<div class="card">
+  <div class="tw"><table>
+    <thead><tr><th>Hipótese</th><th>Evidência que a derrubou</th><th>#</th></tr></thead>
+    <tbody id="refutado"></tbody>
+  </table></div>
+</div>
+
+<!-- ============================================================
+     9. LIMITAÇÕES
+     ============================================================ -->
+<h2>Limitações</h2>
+<div class="card">
+  <ul>
+    <li>[dimensão que não existia nos dados, e o que ela responderia]</li>
+    <li>[consulta que retornou vazio, com os três ângulos tentados]</li>
+    <li>[bloco [SEM SQL], se houver]</li>
+    <li>[controle de base não confirmado pelo usuário, se for o caso]</li>
+  </ul>
+</div>
+
+<!-- ============================================================
+     10. GLOSSÁRIO — toda métrica e toda sigla usada no corpo
+     ============================================================ -->
+<h2>Glossário</h2>
+<div class="card">
+  <div class="tw"><table>
+    <thead><tr><th>Termo</th><th>Definição operacional</th><th>#</th></tr></thead>
+    <tbody id="glossario"></tbody>
+  </table></div>
+</div>
+
+<!-- ============================================================
+     11. ANEXO DE AUDITORIA — gerado ANTES do corpo, recolhido aqui
+     ============================================================ -->
+<h2>Anexo de auditoria</h2>
+
+<details>
+  <summary>Verificação dos números críticos — [X]/[T]</summary>
+  <div class="details-body">
+    <pre>trilha-[AAAA-MM-DD].md — [N] blocos, [X] sem SQL
+T = 1 (dúvida inicial) + [P] públicos + [Q] padrões + [D] derivados = [T]</pre>
+    <div class="tw"><table>
+      <thead><tr>
+        <th>#</th><th>Número crítico</th><th># orig.</th><th class="n">Original</th>
+        <th># verif.</th><th>O que mudou</th><th class="n">Verificado</th><th class="n">Delta</th><th>Bate?</th>
+      </tr></thead>
+      <tbody id="gate"></tbody>
+    </table></div>
+  </div>
+</details>
+
+<details>
+  <summary>Trilha de consultas — [N] consultas</summary>
+  <div class="details-body" id="trilha"></div>
+</details>
+
+<details>
+  <summary>Tabelas e fontes consultadas</summary>
+  <div class="details-body">
+    <div class="tw"><table>
+      <thead><tr><th>Tabela</th><th>O que representa</th><th>Granularidade</th><th>Período coberto</th></tr></thead>
+      <tbody id="fontes"></tbody>
+    </table></div>
+  </div>
+</details>
+
+<details>
+  <summary>Mapa conclusão → fonte</summary>
+  <div class="details-body">
+    <div class="tw"><table>
+      <thead><tr><th>Conclusão na entrega</th><th>Blocos que a sustentam</th></tr></thead>
+      <tbody id="mapa"></tbody>
+    </table></div>
+  </div>
+</details>
+
+<footer>
+  [TÍTULO] · v[N] · gerado em [AAAA-MM-DD HH:MM] · [N] consultas · trilha-[AAAA-MM-DD].md<br>
+  Todo número deste arquivo vem de retorno registrado na trilha. Nenhum é estimativa.
+</footer>
+
+</div>
+
+<script>
+/* ================================================================
+   DADOS — único lugar onde números aparecem.
+   Cada entrada carrega o # do bloco da trilha que a originou.
+   Número digitado no markup diverge na terceira repetição; aqui, não.
+   ================================================================ */
+const DADOS = {
+
+  principal: { valor: "23,4%", fonte: "#14" },
+
+  // Série temporal. anotacoes marca o evento que explica a inflexão.
+  // parcial:true marca coorte incompleta (não fechou a janela da métrica).
+  serie: {
+    titulo: "Taxa de resposta por mês",
+    unidade: "%",
+    fonte: "#18",
+    pontos: [
+      { x:"jan", y:21.2 }, { x:"fev", y:22.0 }, { x:"mar", y:21.8 },
+      { x:"abr", y:22.4 }, { x:"mai", y:26.9 }, { x:"jun", y:28.1 },
+      { x:"jul", y:27.6, parcial:true }
+    ],
+    anotacoes: [ { x:"mai", texto:"parada da aquisição paga" } ]
+  },
+
+  // Barras horizontais, ordenadas por valor no render.
+  barras: {
+    titulo: "Taxa de abertura por faixa de inatividade",
+    unidade: "%",
+    fonte: "#23",
+    itens: [
+      { rotulo:"30–60 dias",  valor:31.4, n:"12.480 clientes" },
+      { rotulo:"61–90 dias",  valor:24.1, n:"9.320 clientes" },
+      { rotulo:"91–180 dias", valor:14.8, n:"18.940 clientes" },
+      { rotulo:"180+ dias",   valor:6.2,  n:"22.110 clientes" },
+      { rotulo:"não informado", valor:19.0, n:"3.410 clientes" }
+    ]
+  },
+
+  // Funil. Mesma unidade em todas as etapas. Coorte fechada.
+  funil: {
+    titulo: "Jornada da campanha de reativação",
+    unidade: "clientes distintos",
+    fonte: "#29",
+    etapas: [
+      { rotulo:"Destinatários", valor:48210 },
+      { rotulo:"Entregues",     valor:46880 },
+      { rotulo:"Abriram",       valor:11290 },
+      { rotulo:"Clicaram",      valor:3140 },
+      { rotulo:"Converteram",   valor:812 }
+    ]
+  },
+
+  // Comparação lado a lado: mesmas métricas, mesma ordem nos dois grupos.
+  comparacao: {
+    a: [ ["Tamanho","8.940 clientes distintos"], ["Taxa de conversão","12,1%"], ["Tempo médio até converter","6 dias"] ],
+    b: [ ["Tamanho","33.800 clientes distintos"], ["Taxa de conversão","1,4%"], ["Tempo médio até converter","—"] ]
+  },
+
+  refutado: [
+    ["[hipótese descartada]", "[o dado que a derrubou]", "#31"]
+  ],
+
+  glossario: [
+    ["Taxa de resposta", "Respondentes distintos ÷ destinatários distintos, contando um cliente uma vez", "#12"],
+    ["Inatividade", "Dias entre o envio e o último evento anterior do cliente — medida na data do envio, nunca contra hoje", "#12"]
+  ],
+
+  // Gate da fase 8. bate:false vira NÃO e a conclusão sai ou é rotulada.
+  gate: [
+    { n:1, metrica:"Taxa de resposta (dúvida inicial)", origem:"#14", valor:"23,4%",
+      verif:"#41", mudou:"outra tabela", valorV:"23,1%", delta:"1,3%", bate:true }
+  ],
+
+  // Trilha. intencao = o que a consulta foi buscar, não o SQL parafraseado.
+  trilha: [
+    {
+      id:"#14", tipo:"Padrão",
+      intencao:"Medir a taxa de resposta da campanha de reativação no trimestre, por faixa de inatividade",
+      sql:"SELECT ...",
+      tabelas:"crm.campanha_envio, crm.evento_resposta",
+      periodo:"2025-05-01 a 2025-07-31 (sent_at)",
+      unidade:"um cliente distinto por linha",
+      nAmostra:"8.412 envios / 3.140 clientes distintos",
+      retorno:"taxa 23,4% — 1.968 aberturas em 8.412 envios"
+    }
+  ],
+
+  fontes: [
+    ["crm.campanha_envio", "Um registro por envio de campanha", "envio", "2024-01-01 a 2025-08-07"]
+  ],
+
+  mapa: [
+    ["[conclusão da entrega]", "#14, #23, #41"]
+  ]
+};
+
+/* ================================================================
+   RENDER — nada aqui inventa número; tudo vem de DADOS.
+   ================================================================ */
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt = v => v.toLocaleString('pt-BR');
+const pct = v => v.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+'%';
+const SVGNS = 'http://www.w3.org/2000/svg';
+
+function svg(w, h){
+  const s = document.createElementNS(SVGNS,'svg');
+  s.setAttribute('viewBox', `0 0 ${w} ${h}`);
+  s.setAttribute('width', w); s.setAttribute('height', h);
+  s.setAttribute('role','img');
+  return s;
+}
+function el(tag, attrs, text){
+  const e = document.createElementNS(SVGNS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (text != null) e.textContent = text;
+  return e;
+}
+
+/* Série temporal: linha + anotação no ponto de inflexão + marca de coorte parcial */
+function serieTemporal(host, d){
+  const W=680, H=300, ml=48, mr=16, mt=34, mb=42;
+  const iw=W-ml-mr, ih=H-mt-mb;
+  const ys=d.pontos.map(p=>p.y), ymax=Math.max(...ys)*1.15, ymin=0;
+  const X=i=>ml+(d.pontos.length===1?iw/2:i*iw/(d.pontos.length-1));
+  const Y=v=>mt+ih-((v-ymin)/(ymax-ymin))*ih;
+  const s=svg(W,H);
+  s.appendChild(el('title',{},d.titulo));
+  s.appendChild(el('text',{x:ml,y:18,style:'font-weight:600'},d.titulo));
+
+  for(let t=0;t<=4;t++){
+    const v=ymin+(ymax-ymin)*t/4, y=Y(v);
+    s.appendChild(el('line',{x1:ml,x2:W-mr,y1:y,y2:y,class:'grid-l'}));
+    s.appendChild(el('text',{x:ml-8,y:y+4,'text-anchor':'end',class:'ax'},v.toFixed(0)+d.unidade));
+  }
+  // segmento sólido até o último ponto fechado; tracejado no parcial
+  const firstPartial=d.pontos.findIndex(p=>p.parcial);
+  const cut=firstPartial===-1?d.pontos.length:firstPartial;
+  const path=a=>a.map((p,i)=>`${i?'L':'M'}${X(p.i)},${Y(p.y)}`).join(' ');
+  const idx=d.pontos.map((p,i)=>({...p,i}));
+  s.appendChild(el('path',{d:path(idx.slice(0,cut)),fill:'none',stroke:'var(--c1)','stroke-width':2.5,'stroke-linejoin':'round'}));
+  if(cut<idx.length) s.appendChild(el('path',{d:path(idx.slice(cut-1)),fill:'none',stroke:'var(--c1)','stroke-width':2.5,'stroke-dasharray':'5 4',opacity:.6}));
+
+  idx.forEach(p=>{
+    s.appendChild(el('circle',{cx:X(p.i),cy:Y(p.y),r:p.parcial?3:4,fill:p.parcial?'var(--bg)':'var(--c1)',stroke:'var(--c1)','stroke-width':2}));
+    s.appendChild(el('text',{x:X(p.i),y:H-mb+18,'text-anchor':'middle',class:'ax'},p.x+(p.parcial?' *':'')));
+  });
+  (d.anotacoes||[]).forEach(a=>{
+    const p=idx.find(q=>q.x===a.x); if(!p) return;
+    s.appendChild(el('line',{x1:X(p.i),x2:X(p.i),y1:mt,y2:mt+ih,stroke:'var(--muted)','stroke-width':1,'stroke-dasharray':'3 3',opacity:.7}));
+    const right=p.i < idx.length/2;
+    s.appendChild(el('text',{x:X(p.i)+(right?7:-7),y:mt+13,'text-anchor':right?'start':'end',class:'anot'},'← '+a.texto));
+  });
+  if(cut<idx.length) s.appendChild(el('text',{x:ml,y:H-6,class:'ax'},'* coorte incompleta — a métrica ainda não fechou'));
+  host.appendChild(s);
+}
+
+/* Barras horizontais, ordenadas por valor */
+function barrasHorizontais(host, d){
+  const itens=[...d.itens].sort((a,b)=>b.valor-a.valor);
+  const rowH=38, W=680, ml=150, mr=90, mt=34;
+  const H=mt+itens.length*rowH+14, iw=W-ml-mr;
+  const max=Math.max(...itens.map(i=>i.valor))*1.05;
+  const s=svg(W,H);
+  s.appendChild(el('title',{},d.titulo));
+  s.appendChild(el('text',{x:0,y:18,style:'font-weight:600'},d.titulo));
+  itens.forEach((it,i)=>{
+    const y=mt+i*rowH, bw=Math.max(1,(it.valor/max)*iw);
+    s.appendChild(el('text',{x:ml-10,y:y+17,'text-anchor':'end',class:'ax'},it.rotulo));
+    s.appendChild(el('rect',{x:ml,y:y+4,width:bw,height:20,rx:2,fill:'var(--c1)'}));
+    s.appendChild(el('text',{x:ml+bw+8,y:y+19},it.valor.toLocaleString('pt-BR')+d.unidade));
+    if(it.n) s.appendChild(el('text',{x:ml,y:y+34,class:'ax'},'n = '+it.n));
+  });
+  host.appendChild(s);
+}
+
+/* Funil: valor absoluto + taxa de passagem entre degraus + maior perda destacada */
+function funil(host, d){
+  const e=d.etapas, W=680, rowH=62, ml=160, mr=120, mt=34;
+  const H=mt+e.length*rowH+10, iw=W-ml-mr, top=e[0].valor;
+  const passagens=e.map((et,i)=> i===0?null:(et.valor/e[i-1].valor));
+  let worst=-1,worstV=2;
+  passagens.forEach((p,i)=>{ if(p!=null&&p<worstV){worstV=p;worst=i;} });
+  const s=svg(W,H);
+  s.appendChild(el('title',{},d.titulo));
+  s.appendChild(el('text',{x:0,y:18,style:'font-weight:600'},d.titulo));
+  e.forEach((et,i)=>{
+    const y=mt+i*rowH, bw=Math.max(2,(et.valor/top)*iw);
+    const pior=(i===worst);
+    s.appendChild(el('text',{x:ml-10,y:y+20,'text-anchor':'end',style:'font-weight:600'},et.rotulo));
+    s.appendChild(el('rect',{x:ml,y:y+4,width:bw,height:26,rx:2,fill:pior?'var(--bad)':'var(--c1)',opacity:pior?.85:1}));
+    s.appendChild(el('text',{x:ml+bw+8,y:y+22},fmt(et.valor)));
+    s.appendChild(el('text',{x:ml,y:y+46,class:'ax'},pct(et.valor/top*100)+' do topo'));
+    if(i>0){
+      const t=pct(passagens[i]*100)+' passou';
+      s.appendChild(el('text',{x:ml-10,y:y+40,'text-anchor':'end',class:'ax',style:pior?'fill:var(--bad);font-weight:650':''}, pior? t+'  ← maior perda' : t));
+    }
+  });
+  s.appendChild(el('text',{x:ml,y:H-2,class:'ax'},'unidade: '+d.unidade));
+  host.appendChild(s);
+}
+
+function linhas(tbody, rows){
+  tbody.innerHTML = rows.map(r=>'<tr>'+r.map((c,i)=>
+    i===0 ? `<th style="text-transform:none;font-size:.88rem;color:var(--text)">${esc(c)}</th>`
+          : `<td>${esc(c)}</td>`).join('')+'</tr>').join('');
+}
+
+document.addEventListener('DOMContentLoaded', ()=>{
+  const p=document.querySelector('[data-n="principal"]');
+  if(p) p.textContent = DADOS.principal.valor;
+
+  if(DADOS.serie)  serieTemporal($('g-serie'), DADOS.serie);
+  if(DADOS.barras) barrasHorizontais($('g-barras'), DADOS.barras);
+  if(DADOS.funil)  funil($('g-funil'), DADOS.funil);
+
+  if(DADOS.comparacao){ linhas($('cmp-a'),DADOS.comparacao.a); linhas($('cmp-b'),DADOS.comparacao.b); }
+  if(DADOS.refutado)  linhas($('refutado'),  DADOS.refutado);
+  if(DADOS.glossario) linhas($('glossario'), DADOS.glossario);
+  if(DADOS.fontes)    linhas($('fontes'),    DADOS.fontes);
+  if(DADOS.mapa)      linhas($('mapa'),      DADOS.mapa);
+
+  $('gate').innerHTML = DADOS.gate.map(g=>`<tr>
+    <td class="n">${g.n}</td><td>${esc(g.metrica)}</td><td>${esc(g.origem)}</td>
+    <td class="n">${esc(g.valor)}</td><td>${esc(g.verif)}</td><td>${esc(g.mudou)}</td>
+    <td class="n">${esc(g.valorV)}</td><td class="n">${esc(g.delta)}</td>
+    <td class="${g.bate?'sim':'nao'}">${g.bate?'SIM':'NÃO'}</td></tr>`).join('');
+
+  $('trilha').innerHTML = DADOS.trilha.map(q=>`<div class="q">
+    <span class="q-id">${esc(q.id)}</span> <span class="q-meta">· ${esc(q.tipo)}</span>
+    <p class="q-intent">${esc(q.intencao)}</p>
+    <pre>${esc(q.sql)}</pre>
+    <p class="q-meta">tabelas: ${esc(q.tabelas)} · período: ${esc(q.periodo)}
+      · unidade: ${esc(q.unidade)} · n: ${esc(q.nAmostra)}</p>
+    <p class="q-meta">retorno: ${esc(q.retorno)}</p>
+  </div>`).join('');
+});
+</script>
+</body>
+</html>
