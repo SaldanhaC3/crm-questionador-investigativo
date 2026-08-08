@@ -78,20 +78,43 @@ O skill não sabe quais modelos existem no ambiente onde roda, e inventar nome d
 
 Nunca escreva um id de modelo que você não viu numa dessas três fontes. Registre o catálogo na memória com a data da consulta: catálogo muda, e um id que funcionava em janeiro pode ter sido aposentado.
 
-**Escolha por posição, não por nome.** Ordene o que você encontrou do mais capaz pro mais barato e trabalhe com três faixas — topo, meio, base. A alocação por tipo de trabalho:
+**Escolha por posição, não por nome.** Ordene o que você encontrou do mais capaz pro mais barato e trabalhe com três faixas — topo, meio, base.
+
+### O loop principal vai na faixa de topo
+
+O raciocínio da investigação — calibração, decomposição, hipótese, adversarial, causalidade, double check — acontece **no loop principal**, não em subagente. Julgamento não se delega, então o loop é onde a inteligência precisa estar.
+
+**Mas o modelo do loop provavelmente não é sua escolha.** Na maioria dos ambientes ele foi definido antes desta skill carregar. Você não pode se promover — e é justamente por isso que a única coisa útil a fazer é **declarar o desencontro**:
+
+> Se, ao descobrir o catálogo, você perceber que está rodando num modelo abaixo da faixa de topo disponível, diga ao usuário na abertura, com o id do modelo atual e o do topo disponível: *"estou rodando em X; existe Y disponível, que é mais capaz. As fases 4, 5 e 8 se beneficiam do modelo mais forte — quer trocar antes de eu começar?"*. Só o usuário pode fazer essa troca, e ele só faz se souber.
+
+Isso vale duas vezes numa investigação profunda: quarenta consultas de raciocínio adversarial num modelo de faixa média é o tipo de desperdício que ninguém percebe, porque a saída parece bem escrita.
+
+Se o ambiente expõe controle de esforço, use esforço alto no loop durante as fases 4, 5 e 8, e baixo no que for despachado pra transcrição e formatação.
+
+### O que pode sair do loop
 
 | Trabalho | Faixa | Por quê |
 |---|---|---|
-| Calibração, decomposição da dúvida, decidir onde cavar | Topo | Erro aqui contamina a sessão inteira |
-| Fases 4, 5 e 6: hipótese, adversarial, causalidade | Topo | É o julgamento que o skill existe pra fazer |
-| Fase 8: double check e releitura adversarial | Topo | É a última linha de defesa |
-| Interpretar retorno e redigir a entrega | Meio | Precisa de bom texto, não de raciocínio profundo |
-| Ler o SQL contra a pergunta, conferir recorte e unidade | Meio | Conferência mecânica, mas erro passa direto |
-| Transcrever a trilha pro anexo, montar o HTML, formatar | Base | Cópia e formatação, zero julgamento |
+| Transcrever a trilha pro anexo | Base | Cópia literal, zero julgamento |
+| Montar o HTML e preencher o template | Base | Formatação a partir de dados já decididos |
+| Varredura de catálogo ampla (listar tabelas e colunas de vários esquemas) | Meio | Volume de leitura, pouca decisão |
+| Redigir seções longas da entrega a partir de achados já fechados | Meio | Precisa de bom texto, não de raciocínio profundo |
 
-Se o ambiente expõe controle de esforço, use esforço alto nas fases 4, 5 e 8, e baixo na transcrição e na formatação.
+Tudo que não está nesta tabela fica no loop. Em dúvida, fica no loop.
 
-**Delegue por subagente, não trocando o modelo do loop.** Trocar o modelo no meio da sessão invalida o cache de prompt e joga fora todo o contexto acumulado da investigação. O caminho certo é manter o loop principal num modelo só e despachar as tarefas de faixa baixa pra subagentes.
+### Eficiência de subagente
+
+Subagente não é grátis: ele precisa de briefing, reconstrói contexto do zero, e devolve um relatório que o loop tem que ler. Numa investigação de quarenta consultas, delegação mal calibrada custa mais que o trabalho que economiza. Seis regras:
+
+- **Delegue em lote, não por item.** O anexo inteiro é *um* subagente que recebe o caminho da trilha e devolve o markdown transcrito. Um subagente por bloco são quarenta e sete viagens pra fazer o trabalho de uma
+- **Não delegue o que você faria em duas chamadas de ferramenta.** Ler um arquivo, conferir um número, rodar uma consulta: o custo de explicar já é maior que o de fazer
+- **Briefe completo na primeira vez.** Subagente mal briefado volta com a coisa errada, e aí custou duas viagens em vez de uma. Diga o objetivo, o formato exato de saída, e onde estão os insumos
+- **Comprometa-se com a delegação.** Se despachou, não refaça nem re-derive o que voltou. Conferir a forma da saída é razoável; reexecutar o trabalho anula o motivo de ter delegado
+- **Poucos simultâneos.** Se você está despachando mais de um punhado ao mesmo tempo, provavelmente o trabalho devia estar no loop, ou devia ser um subagente só com escopo maior
+- **Nunca delegue a decisão de qual pergunta fazer em seguida.** É o fio da investigação. Um subagente não tem o contexto acumulado que gerou a pergunta, e por isso devolve a pergunta óbvia
+
+**O Agente de Dados é a exceção deliberada.** Toda consulta delegada é uma invocação de subagente, e o contrato manda fazer **uma por vez** — o oposto de lote. É intencional: o bloco da trilha tem que ser escrito no turno em que o retorno chega, e delegar consultas em lote força escrita retroativa, que é escrita de memória. Aqui a eficiência perde da auditabilidade, de propósito.
 
 **Transcrição sim, julgamento não.** Um modelo mais barato pode copiar SQL, montar tabela e formatar HTML. Ele não decide se um número é confiável, se uma hipótese sobreviveu, ou se um padrão é robusto. Terceirizar julgamento pra faixa base é como terceirizar o double check: economiza a consulta e perde a investigação.
 
@@ -117,7 +140,9 @@ Na primeira investigação o arquivo não existe: crie-o a partir de [`memoria-i
 
 ## Calibração de profundidade
 
-Primeira decisão de toda investigação. Classifique a dúvida e declare a classificação ao usuário:
+Primeira decisão de toda investigação, e é aqui que a **seleção de modelo** acontece: descubra o catálogo, declare o nível calibrado e, na mesma mensagem, o modelo em que você está rodando — com o aviso de desencontro se houver um mais capaz disponível. Investigação profunda é onde a diferença de modelo mais pesa, então a hora de resolver isso é antes da primeira consulta, não na fase 5.
+
+Classifique a dúvida e declare a classificação ao usuário:
 
 - **Consulta direta.** Resolve com uma ou duas consultas objetivas, sem hipótese envolvida. Delegue, responda com fonte, sem o fluxo completo
 - **Investigação focada.** Há hipótese envolvida, mas a dúvida é fechada e o terreno já é conhecido. Rode as fases 0 (só verificação de mudanças), 1, 4, 5, 8 e 9 — aqui a fase 4 parte da hipótese contida na própria dúvida, não de padrão garimpado na fase 3. As fases 6 e 7 entram se um público estimulável aparecer. Ordem de grandeza: 10 a 20 consultas
@@ -564,6 +589,10 @@ O Questionador aplica estes fundamentos em toda interpretação de retorno e em 
 - Propor estímulo pra diferença estrutural, que nenhuma comunicação muda
 - Escrever data ou hora de memória em vez de obter do sistema
 - Inventar id de modelo, nome de skill ou nome de função SQL. Vale o mesmo guard rail dos nomes de tabela
+- Rodar as fases de raciocínio num modelo abaixo do topo disponível sem avisar o usuário. Você não pode se promover, mas pode declarar o desencontro — e só ele pode trocar
+- Delegar julgamento, ou delegar a decisão de qual pergunta fazer em seguida
+- Despachar um subagente por item quando um subagente com escopo maior faria o lote
+- Delegar o que você faria em duas chamadas de ferramenta, ou refazer o que o subagente já devolveu
 - Arquivar o SQL recebido sem lê-lo contra a lista de onde o SQL costuma quebrar
 - Aceitar `COUNT(*)` como resposta a uma pergunta sobre pessoas
 - Usar `NOT IN` onde o certo é `LEFT ANTI JOIN`. Um NULL na subconsulta devolve zero linhas em silêncio
