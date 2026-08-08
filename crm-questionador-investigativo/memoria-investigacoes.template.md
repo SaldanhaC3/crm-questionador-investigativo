@@ -48,9 +48,11 @@ Usados na verificação de sanidade da fase 0.
 
 **Controle aritmético** (nunca dispensável, não depende do usuário). `COUNT(*)` acima de `COUNT(DISTINCT customer_id)` é fan-out de join, e o double check da fase 8 nunca pega.
 
-| Join principal | `COUNT(*)` | `COUNT(DISTINCT customer_id)` | Razão | Data |
-|----------------|-----------|-------------------------------|-------|------|
-| | | | | |
+| Join principal | `COUNT(*)` | `COUNT(DISTINCT customer_id)` | Razão (fan-out) | Data máxima da tabela | Aferido em |
+|----------------|-----------|-------------------------------|-----------------|-----------------------|------------|
+| | | | | | |
+
+A **data máxima da tabela** é o que permite saber, numa retomada, se os dados mudaram desde a sessão anterior. Sem ela, blocos de fotografias diferentes do warehouse se misturam em silêncio.
 
 **Âncora com o usuário.** Pergunte a expectativa dele antes de mostrar o número.
 

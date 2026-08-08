@@ -150,9 +150,13 @@ Recolhido no HTML (`<details>`), seção final no documento. Cinco blocos:
 
 - O `#` e o tipo do bloco
 - **O que esta consulta foi buscar**, em uma frase — não o SQL parafraseado, a intenção. `#23: verificar se a diferença de abertura entre os dois grupos sobrevive comparando só quem entrou pelo mesmo canal`
-- O SQL executado, na íntegra, em bloco de código copiável
+- O SQL executado, na íntegra, em bloco de código copiável, com o marcador de autoria: `[COLADO]` (Agente de Dados), `[PRÓPRIO]` (escrito e executado pelo Questionador) ou `[SEM SQL]`
 - Tabelas tocadas, filtro de período com a coluna de data, unidade da linha, N retornado
 - O retorno resumido e a leitura
+
+**Investigação retomada.** Se a trilha tem mais de uma sessão, os separadores de sessão vão para o anexo junto com os blocos, e o cabeçalho declara: `investigação em 2 sessões · 47 blocos · data máxima da tabela mudou entre elas`. Achado que combina blocos de fotografias diferentes do warehouse leva a ressalva no próprio bloco do achado, não só aqui.
+
+**Contagem de autoria.** Uma linha antes da trilha: `39 blocos [COLADO] · 6 [PRÓPRIO] · 2 [SEM SQL]`. Muitos `[PRÓPRIO]` significa que o Agente de Dados falhou bastante — informação relevante pra quem vai confiar na entrega. Muitos `[SEM SQL]` é limitação de auditoria e vai também na seção de limitações.
 
 Sem resumir SQL e sem omitir consulta que não deu em nada: consulta vazia também é informação de auditoria, e as três tentativas que viraram limitação são a prova de que houve persistência.
 

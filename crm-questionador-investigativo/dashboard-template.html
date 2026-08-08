@@ -445,13 +445,21 @@ const DADOS = {
       verif:"#42", mudou:"outra agregação", valorV:"33.640", delta:0.5, bate:true }
   ],
 
+  /* autoria: COLADO (Agente de Dados) | PRÓPRIO (escrito e executado pelo
+     Questionador) | SEM SQL. É o que torna a autoria auditável. */
   trilha: [
-    { id:"#14", tipo:"Padrão",
+    { id:"#14", tipo:"Padrão", autoria:"COLADO",
       intencao:"Medir a taxa de resposta da campanha de reativação no trimestre, por faixa de inatividade",
       sql:"SELECT ...", tabelas:"crm.campanha_envio, crm.evento_resposta",
       periodo:"2025-05-01 a 2025-07-31 (sent_at)", unidade:"um cliente distinto por linha",
       nAmostra:"8.412 envios / 3.140 clientes distintos",
-      retorno:"taxa 23,4% — 1.968 aberturas em 8.412 envios" }
+      retorno:"taxa 23,4% — 1.968 aberturas em 8.412 envios" },
+    { id:"#41", tipo:"Desafio", autoria:"PRÓPRIO",
+      intencao:"Verificar a taxa da dúvida inicial por autoria diferente: minha própria query, sobre outra tabela",
+      sql:"SELECT ...", tabelas:"crm.evento_resposta",
+      periodo:"2025-05-01 a 2025-07-31 (ocorreu_em)", unidade:"um cliente distinto por linha",
+      nAmostra:"3.128 clientes distintos",
+      retorno:"taxa 23,1% — delta de 1,3% contra #14" }
   ],
 
   fontes: [ ["crm.campanha_envio","Um registro por envio de campanha","envio","2024-01-01 a 2025-08-07"] ],
@@ -791,8 +799,11 @@ document.addEventListener('DOMContentLoaded',()=>{
     <td class="n">${esc(g.valorV)}</td><td class="n">${dec(g.delta)}%</td>
     <td class="${g.bate?'sim':'nao'}">${g.bate?'SIM':'NÃO'}</td></tr>`).join('');
 
-  $('trilha').innerHTML=DADOS.trilha.map(q=>`<div class="q">
-    <span class="q-id">${esc(q.id)}</span> <span class="q-meta">· ${esc(q.tipo)}</span>
+  const aut=DADOS.trilha.reduce((a,q)=>{const k=q.autoria||'COLADO'; a[k]=(a[k]||0)+1; return a;},{});
+  const autLinha=Object.entries(aut).map(([k,v])=>`${v} ${k}`).join(' · ');
+  $('trilha').innerHTML=`<p class="q-meta" style="margin:0 0 4px">autoria: ${esc(autLinha)}</p>`+
+    DADOS.trilha.map(q=>`<div class="q">
+    <span class="q-id">${esc(q.id)}</span> <span class="q-meta">· ${esc(q.tipo)} · SQL ${esc(q.autoria||'COLADO')}</span>
     <p class="q-intent">${esc(q.intencao)}</p>
     <pre>${esc(q.sql)}</pre>
     <p class="q-meta">tabelas: ${esc(q.tabelas)} · período: ${esc(q.periodo)}

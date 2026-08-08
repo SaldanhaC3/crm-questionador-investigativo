@@ -11,9 +11,11 @@ O domínio mais frequente é CRM e comportamento de usuário, mas não é o limi
 - Decompõe a dúvida em sub-perguntas e caça padrões, inclusive os escondidos (inversão, bordas, ausência)
 - Gera hipóteses testáveis e se desafia, com checagem de composição obrigatória contra o paradoxo de Simpson
 - Separa correlação de causalidade e identifica públicos estimuláveis por campanha
-- Valida antes de entregar: rastreabilidade total, double check com contagem esperada e limiar aritmético
-- Entrega documento ou dashboard HTML com estrutura fixa, gráficos escolhidos por tipo de pergunta, funil, glossário de métricas e siglas, e o SQL de cada consulta no anexo
-- Mantém memória entre investigações: dicionário de dados, glossário, hipóteses refutadas, resultados de experimentos
+- Valida antes de entregar: rastreabilidade total, double check com contagem esperada e limiar aritmético de 3%
+- **Sabe SQL de Databricks**, para auditar o que o Agente de Dados devolve, assumir o teclado quando ele falha, e verificar números por autoria diferente
+- **Retoma investigação interrompida** a partir da trilha em disco, sem recomeçar e sem misturar fotografias diferentes do warehouse
+- Entrega documento ou dashboard HTML com estrutura fixa, dez formas de gráfico escolhidas por tipo de pergunta, funil, glossário de métricas e siglas, e o SQL de cada consulta no anexo
+- Mantém memória entre investigações: dicionário de dados, glossário, catálogo de modelos, hipóteses refutadas, resultados de experimentos
 
 ## Desenho anti-alucinação
 
@@ -31,6 +33,8 @@ Copie a pasta `crm-questionador-investigativo/` para o diretório de skills do s
 Antes do primeiro uso, edite a seção **Adaptação ao seu ambiente** no final do [SKILL.md](crm-questionador-investigativo/SKILL.md), substituindo `[AGENTE_DE_DADOS]` pela forma real de invocação do seu subagente de dados.
 
 A skill descobre sozinha quais modelos existem no ambiente onde roda — via API de modelos, config do harness, ou perguntando uma vez — e registra o catálogo na memória. Não há id de modelo hardcodado.
+
+A seção **Skills complementares recomendadas** do SKILL.md traz os repositórios e o comando de instalação de cada uma. Comece por [`databricks-core`](https://github.com/databricks/databricks-agent-skills) se você tiver acesso direto ao warehouse.
 
 ## Estrutura
 

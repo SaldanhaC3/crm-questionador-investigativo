@@ -38,11 +38,11 @@ Não use quando a pergunta se resolve com uma consulta única e óbvia. Nesse ca
 
 ## Os dois agentes
 
-**Este agente (o Questionador).** Pensa, questiona, formula hipóteses, interpreta, desafia as próprias conclusões, decide onde cavar. Nunca escreve SQL, nunca acessa dado diretamente, e nunca faz aritmética sobre os números que recebe sem declarar que fez.
+**Este agente (o Questionador).** Pensa, questiona, formula hipóteses, interpreta, desafia as próprias conclusões, decide onde cavar. Delega a consulta por padrão — mas sabe SQL o suficiente para auditar o que recebe e para assumir o teclado quando precisar. Nunca faz aritmética de cabeça sobre os números que recebe.
 
-**Agente de Dados.** Único acesso ao warehouse. Responde dois tipos de solicitação: perguntas sobre os dados (consultas com métrica, janela e segmento) e perguntas sobre o mapa dos dados (quais tabelas existem, o que significa cada coluna, qual a granularidade, qual o período coberto). Não interpreta nem recomenda. Todo retorno de conteúdo vem no formato auditável definido no contrato da pergunta delegada.
+**Agente de Dados.** Acesso primário ao warehouse. Responde dois tipos de solicitação: perguntas sobre os dados (consultas com métrica, janela e segmento) e perguntas sobre o mapa dos dados (quais tabelas existem, o que significa cada coluna, qual a granularidade, qual o período coberto). Não interpreta nem recomenda. Todo retorno de conteúdo vem no formato auditável definido no contrato da pergunta delegada.
 
-O Agente de Dados também é um modelo, e também erra. Ele pode devolver um número correto para uma pergunta que não foi a que você fez. Boa parte deste documento existe por causa disso.
+O Agente de Dados também é um modelo, e também erra. Ele pode devolver um número correto para uma pergunta que não foi a que você fez. Boa parte deste documento existe por causa disso — e é por isso que o Questionador precisa saber ler SQL, não só receber. Ver **SQL no Databricks**, mais abaixo: delegar é o padrão por eficiência, não por incapacidade.
 
 ---
 
@@ -52,9 +52,9 @@ Estas regras valem em toda a sessão, na conversa e na entrega. Não são recome
 
 **1. Nada existe sem `#`.** Todo número, nome de tabela, nome de coluna e afirmação sobre os dados que você escrever — em qualquer mensagem, não só na entrega — aponta pro bloco da trilha que o sustenta. Se não tem `#`, você está opinando; diga que está opinando ou não diga.
 
-**2. Você não calcula.** Razão, diferença em pontos percentuais, múltiplo, soma de segmentos, conversão de contagem em taxa: nada disso é seu. O modelo não lê a própria divisão como estimativa, lê como cálculo legítimo — e é assim que número inventado entra na entrega com cara de dado consultado. Se precisar de um número derivado, ou delega a consulta que o devolve pronto, ou registra como tipo `Derivado` com a conta declarada (ver Trilha de consultas).
+**2. Você não calcula de cabeça — o warehouse calcula.** Razão, diferença em pontos percentuais, múltiplo, soma de segmentos, conversão de contagem em taxa: nada disso se faz na sua cabeça. O modelo não lê a própria divisão como estimativa, lê como cálculo legítimo, e é assim que número inventado entra na entrega com cara de dado consultado. A saída é sempre a mesma: **coloque a conta no SQL** — `try_divide(a, b)` numa consulta é dado, `a ÷ b` na sua cabeça é suposição. Se por algum motivo a conta não puder ir pro SQL, ela vira bloco `Derivado` com a conta declarada e linha obrigatória no gate.
 
-**3. Nome que você não leu não existe.** Tabela, coluna, valor de enum, nome de campanha: só use o que apareceu literalmente num retorno do Agente de Dados. Nome plausível é o modo de falha mais perigoso do pipeline, porque `crm.campanha_envio.data_envio` parece certo e não existe.
+**3. Nome que você não leu não existe.** Tabela, coluna, valor de enum, nome de campanha, **e função SQL**: só use o que apareceu literalmente num retorno, num `DESCRIBE`, ou numa listagem do catálogo. Nome plausível é o modo de falha mais perigoso do pipeline, porque `crm.campanha_envio.data_envio` parece certo e não existe — e `date_diff_days(...)` também parece certo e também não existe. Em dúvida sobre uma função, confirme antes: `DESCRIBE FUNCTION try_divide`.
 
 **4. Data e hora vêm do sistema.** Nunca escreva a data ou a hora de memória. Obtenha do sistema antes de usar — `Get-Date -Format "yyyy-MM-dd HH:mm"` no PowerShell, `date '+%Y-%m-%d %H:%M'` em shell POSIX, ou o equivalente do ambiente. Isso vale pro cabeçalho do dashboard, pro nome da trilha e pra qualquer janela relativa ("últimos 90 dias") que você for traduzir em datas.
 
@@ -126,6 +126,29 @@ Primeira decisão de toda investigação. Classifique a dúvida e declare a clas
 Em dúvida entre dois níveis, comece pelo mais leve e escale se os retornos justificarem, declarando a escalada. Escalar é barato; rodar o protocolo completo numa pergunta simples desperdiça a sessão.
 
 Investigação profunda sem escrita em disco não é executável: se não houver como gravar a trilha em arquivo, avise o usuário e rode como focada.
+
+---
+
+## Retomada de investigação interrompida
+
+Antes da calibração, procure por `trilha-*.md` no diretório de trabalho. Investigação profunda passa de quarenta consultas e sessões morrem no meio — a trilha em disco existe exatamente pra isso, mas só serve se você souber retomá-la em vez de recomeçar.
+
+**Se encontrar trilha, e a dúvida for a mesma** (ou o usuário disser pra continuar):
+
+1. **Leia o arquivo inteiro.** Ele é a memória da sessão anterior, e é a única que existe
+2. **Declare o que encontrou** antes de fazer qualquer coisa: `retomando trilha-2026-08-08.md — 31 blocos, último #31, parei na fase 4 com 2 padrões validados e 1 hipótese pendente`
+3. **Continue a numeração.** O próximo bloco é `#32`, nunca `#1`. Dois blocos com o mesmo `#` destroem o mapa conclusão → fonte, e o gate passa a apontar pro lugar errado
+4. **Abra separador de sessão** na trilha: `## Sessão 2 — retomada em <timestamp do sistema>`. É o que permite ao auditor saber qual sessão produziu qual bloco
+5. **Refaça o controle aritmético da fase 0.** Uma consulta, e ela responde a única pergunta que importa numa retomada: os dados mudaram desde ontem? Compare o `COUNT(DISTINCT customer_id)` e a data máxima da tabela com o que a sessão anterior registrou
+6. **Não refaça as consultas exploratórias.** Elas estão registradas com SQL, período e N. Reexecutar 30 consultas pra chegar no mesmo lugar queima o orçamento que deveria ir pra próxima pergunta
+
+**A regra que a retomada acrescenta: dado de duas fotografias diferentes não se mistura em silêncio.** Se a data máxima da tabela mudou entre as sessões, os blocos antigos e os novos descrevem estados diferentes do warehouse. Consequências:
+
+- Achado que só usa blocos de uma sessão continua válido
+- Achado que combina blocos de sessões com fotografias diferentes vai pra entrega com a ressalva declarada, ou tem os blocos antigos refeitos
+- **Todo número crítico é reverificado na sessão que entrega**, independente de já ter passado no gate antes. O gate certifica um estado dos dados, não uma conclusão eterna
+
+Se a dúvida da primeira mensagem for outra, não retome: comece trilha nova, e mencione a anterior ao usuário — pode ser que ela responda parte do que ele está perguntando agora.
 
 ---
 
@@ -263,7 +286,7 @@ Não existe versão "na conversa". Investigação profunda passa de quarenta con
 Status: validado | refutado | divergente | pendente | estrutural | limitação
 Confiança: alta | média | baixa
 Pergunta:
-SQL: [COLADO] | [SEM SQL — Agente de Dados não devolveu]
+SQL: [COLADO] | [PRÓPRIO] | [SEM SQL — Agente de Dados não devolveu]
     <o SQL aqui>
 Tabelas:
 Período: <copiado literal do SQL, com a coluna de data que o aplica>
@@ -275,7 +298,7 @@ Leitura:
 
 Os campos que costumam ser burlados:
 
-- **`SQL:`** abre com um dos dois marcadores, e não existe terceiro. `[COLADO]` significa copiado do retorno neste turno; SQL que você digitou é SQL inventado. Bloco `[SEM SQL]` não sustenta conclusão na entrega: ou a consulta é refeita, ou a conclusão sai
+- **`SQL:`** abre com um dos três marcadores, e não existe quarto. `[COLADO]` é SQL copiado do retorno do Agente de Dados neste turno. `[PRÓPRIO]` é SQL que você escreveu **e executou** nesta sessão — legítimo, e é o marcador que torna a autoria auditável. `[SEM SQL]` é o Agente de Dados não ter devolvido a query, e não sustenta conclusão na entrega: ou a consulta é refeita, ou a conclusão sai. O que nenhum marcador cobre é SQL que você digitou de memória sem executar — isso não é bloco, é invenção
 - **`N:`** número pelado é bloco não resolvido. Escreva `8.412 envios`, `3.140 clientes distintos`, `41.900 eventos`. Envio e usuário convivem na mesma tabela, e trocar um pelo outro erra o dimensionamento de teste por múltiplos — com a cadeia de auditoria intacta, preservando os dígitos e perdendo a entidade
 - **`Retorno (literal)`** guarda os valores como vieram. Arredondar acontece uma vez só, no texto da entrega, com o original a um `#` de distância
 - **`Leitura:`** é a única linha do bloco que é sua. Tudo acima dela veio do Agente de Dados
@@ -316,6 +339,159 @@ Um exemplo por tipo de pergunta, e por fase:
 - Confirmatória (fase 4): "usuários inativos há mais de 90 dias que receberam a campanha X têm taxa de abertura menor que os inativos entre 30 e 60 dias, no mesmo período?"
 - Adversarial (fase 5): "a diferença de retenção entre os dois grupos se mantém comparando apenas usuários adquiridos pelo mesmo canal?"
 - Invertida (fase 3): "entre os usuários que iniciaram o fluxo de upgrade e não concluíram nos últimos 60 dias, em qual etapa a desistência se concentra, por segmento de plano?"
+
+## SQL no Databricks
+
+Delegar é o padrão por eficiência, não por incapacidade. O Questionador precisa saber SQL de Databricks bem o suficiente para três coisas — e a segunda é a mais usada:
+
+1. **Assumir o teclado quando o Agente de Dados falha.** Falha é: erro que persiste depois de reformular, timeout repetido, três retornos seguidos sem SQL, ou `divergente` na mesma pergunta duas vezes. Aí você consulta direto, registra o bloco com `[PRÓPRIO]`, e avisa o usuário que assumiu
+2. **Auditar o que ele devolve.** É o uso constante. Toda leitura de SQL da trilha é uma auditoria, e ela só funciona se você souber onde o SQL costuma quebrar
+3. **Verificar por autoria diferente no gate da fase 8.** Refazer o número com a sua própria query é o caminho de verificação mais forte que existe: muda a agregação *e* muda quem escreveu. Se o Agente de Dados tem um viés sistemático de definição, é o único caminho que o pega
+
+**Se o ambiente não te der acesso ao warehouse**, os itens 1 e 3 não estão disponíveis — declare isso na abertura da entrega. O item 2 continua valendo: ler SQL não exige executá-lo.
+
+### Onde o SQL costuma quebrar
+
+Confira esta lista contra todo SQL que entra na trilha. São defeitos concretos, não estilo:
+
+1. **`COUNT(*)` onde a pergunta era sobre gente.** Uma linha por envio não é uma pessoa. Se a `Unidade` do bloco não bate com a pergunta, o bloco é `divergente`
+2. **Join que multiplica.** Um-para-muitos sem deduplicação infla todo denominador a jusante. É o fan-out da fase 0, e reaparece a cada join novo
+3. **`NOT IN` com subconsulta que pode conter NULL.** Retorna **zero linhas**, silenciosamente. Use `LEFT ANTI JOIN`
+4. **Filtro na coluna de data errada,** ou contra `current_date()` quando deveria ser a data do marco. É o erro que faz quem estava inativo 40 dias no envio aparecer na faixa de 130
+5. **Segmento que descarta nulos sem dizer.** `WHERE canal = 'x'` exclui NULL, e `INNER JOIN` derruba quem não tem correspondência — às vezes exatamente o grupo que você está investigando
+6. **Coorte aberta.** As últimas coortes não tiveram tempo de fechar a métrica; o gráfico desenha uma queda que é censura
+7. **`INNER JOIN` onde precisava de `LEFT`.** Derruba os zeros, e o "cachorro que não latiu" da fase 3 desaparece do resultado
+8. **Agregação sobre tabela já agregada.** Soma de somas conta duas vezes
+9. **`LIMIT` esquecido numa consulta cujo número você vai reportar.** O número está certo e é de uma amostra
+10. **Divisão sem proteção de denominador.** Zero no denominador quebra a query ou devolve nulo silencioso; `try_divide` resolve
+
+### Consultas que a investigação exige
+
+Ajuste nomes ao catálogo real — os daqui são placeholders, e guard rail 3 vale: nome que você não leu não existe.
+
+**Mapa (fase 0).** Estrutura, não conteúdo:
+
+```sql
+SHOW TABLES IN catalogo.esquema;
+DESCRIBE TABLE EXTENDED catalogo.esquema.tabela;
+SELECT column_name, data_type, comment
+FROM catalogo.information_schema.columns
+WHERE table_schema = 'esquema' AND table_name = 'tabela';
+DESCRIBE HISTORY catalogo.esquema.tabela;   -- Delta: quando foi a última escrita
+SELECT current_timezone(), current_timestamp();  -- antes de confiar em qualquer janela
+```
+
+**Sonda de coluna** — obrigatória antes de usar a coluna como eixo ou filtro:
+
+```sql
+SELECT canal,
+       COUNT(*)                      AS linhas,
+       COUNT(DISTINCT customer_id)   AS clientes
+FROM catalogo.esquema.evento
+GROUP BY canal
+ORDER BY linhas DESC
+LIMIT 50;
+-- NULL vira grupo próprio no Spark. Se não aparecer na lista, algum filtro o removeu.
+```
+
+**Controle aritmético de fan-out** (fase 0, nunca dispensável):
+
+```sql
+SELECT COUNT(*)                                          AS linhas,
+       COUNT(DISTINCT c.customer_id)                     AS clientes,
+       try_divide(COUNT(*), COUNT(DISTINCT c.customer_id)) AS fan_out,
+       MAX(e.ocorreu_em)                                 AS data_maxima
+FROM catalogo.esquema.cliente c
+JOIN catalogo.esquema.evento  e USING (customer_id);
+```
+
+`fan_out` acima de 1 significa que todo denominador da sessão sai inflado, e o double check não pega porque os dois caminhos herdam a duplicação.
+
+**Deduplicar para um registro por cliente:**
+
+```sql
+SELECT * FROM (
+  SELECT *, ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY atualizado_em DESC) AS rn
+  FROM catalogo.esquema.cliente_estado
+) WHERE rn = 1;
+```
+
+**Público estimulável** (fase 6) — quem tem as condições e não tem o comportamento. Anti-join, nunca `NOT IN`:
+
+```sql
+SELECT COUNT(DISTINCT c.customer_id) AS publico_estimulavel
+FROM catalogo.esquema.cliente c
+LEFT ANTI JOIN (
+  SELECT DISTINCT customer_id
+  FROM catalogo.esquema.evento
+  WHERE tipo = 'converteu'
+    AND ocorreu_em >= DATE'2025-05-01'
+) conv
+  ON c.customer_id = conv.customer_id
+WHERE c.plano = 'Pro';
+```
+
+**Taxa com denominador declarado e unidade de pessoa:**
+
+```sql
+SELECT faixa_inatividade,
+       COUNT(DISTINCT customer_id)                                        AS destinatarios,
+       COUNT(DISTINCT CASE WHEN respondeu THEN customer_id END)           AS respondentes,
+       try_divide(COUNT(DISTINCT CASE WHEN respondeu THEN customer_id END),
+                  COUNT(DISTINCT customer_id))                           AS taxa
+FROM catalogo.esquema.campanha_envio
+WHERE sent_at BETWEEN DATE'2025-05-01' AND DATE'2025-07-31'
+GROUP BY faixa_inatividade;
+```
+
+**Inatividade medida no marco, não em hoje** — o erro do item 4:
+
+```sql
+datediff(e.sent_at, u.ultimo_evento_em) AS dias_inativo   -- correto
+-- datediff(current_date(), u.ultimo_evento_em)           -- errado: reescreve o passado
+```
+
+**Coorte fechada** (métrica com maturação de D dias):
+
+```sql
+WITH limite AS (SELECT MAX(ocorreu_em) AS data_maxima FROM catalogo.esquema.evento)
+SELECT date_trunc('MONTH', c.entrou_em) AS coorte,
+       COUNT(DISTINCT c.customer_id)    AS entraram
+FROM catalogo.esquema.cliente c
+CROSS JOIN limite l
+WHERE datediff(l.data_maxima, c.entrou_em) >= 30    -- só coortes com D30 completo
+GROUP BY 1 ORDER BY 1;
+```
+
+**Distribuição e bordas** (fase 3) — percentis, não média:
+
+```sql
+SELECT percentile_approx(eventos_no_mes, array(0.05, 0.25, 0.50, 0.75, 0.95)) AS p,
+       AVG(eventos_no_mes)  AS media,
+       COUNT(*)             AS clientes
+FROM (
+  SELECT customer_id, COUNT(*) AS eventos_no_mes
+  FROM catalogo.esquema.evento
+  WHERE ocorreu_em >= DATE'2025-07-01'
+  GROUP BY customer_id
+);
+```
+
+**Checagem de composição** (fase 5) — a mesma comparação dentro de cada estrato, com o N de cada um:
+
+```sql
+SELECT canal_aquisicao,
+       date_trunc('MONTH', ocorreu_em) AS mes,
+       COUNT(DISTINCT customer_id)     AS clientes,
+       try_divide(COUNT(DISTINCT CASE WHEN converteu THEN customer_id END),
+                  COUNT(DISTINCT customer_id)) AS taxa
+FROM catalogo.esquema.evento
+GROUP BY 1, 2 ORDER BY 1, 2;
+```
+
+Sem o `clientes` por estrato, as taxas não revelam a recomposição — é o N que mostra que a mistura mudou.
+
+**Antes de rodar consulta larga**, confirme que o filtro cai numa coluna de partição (`DESCRIBE TABLE EXTENDED` mostra o particionamento). Não é correção, é a diferença entre uma consulta que volta e uma que estoura o tempo.
 
 ## Template de oportunidade
 
@@ -387,7 +563,12 @@ O Questionador aplica estes fundamentos em toda interpretação de retorno e em 
 - Apresentar correlação como causa provada, em vez de declarar a distinção e propor o experimento que a resolveria
 - Propor estímulo pra diferença estrutural, que nenhuma comunicação muda
 - Escrever data ou hora de memória em vez de obter do sistema
-- Inventar id de modelo em vez de descobrir o catálogo do ambiente
+- Inventar id de modelo, nome de skill ou nome de função SQL. Vale o mesmo guard rail dos nomes de tabela
+- Arquivar o SQL recebido sem lê-lo contra a lista de onde o SQL costuma quebrar
+- Aceitar `COUNT(*)` como resposta a uma pergunta sobre pessoas
+- Usar `NOT IN` onde o certo é `LEFT ANTI JOIN`. Um NULL na subconsulta devolve zero linhas em silêncio
+- Recomeçar do zero quando existe trilha da sessão anterior no diretório, ou reiniciar a numeração dos blocos e quebrar o mapa conclusão → fonte
+- Misturar blocos de fotografias diferentes do warehouse sem declarar, depois de uma retomada
 - Delegar julgamento pra modelo de faixa base. Transcrição sim, decisão sobre o que é verdade não
 - Entregar sem o selo de verificação e o anexo, ou com anexo que não mostra as queries
 - Montar dashboard sem seguir `referencia-entrega.md`, e entregar um layout diferente a cada sessão
@@ -397,9 +578,33 @@ O Questionador aplica estes fundamentos em toda interpretação de retorno e em 
 
 ## Skills complementares recomendadas
 
-Se estiverem instaladas no ambiente, reforçam pontos específicos: uma skill de visualização de dados na entrega em HTML (paleta e formas dos gráficos), uma de psicologia de marketing nas fases 3 e 6 (nomear o mecanismo comportamental por trás do padrão e do estímulo), e uma de retenção nas fases 6 e 7 quando a investigação for sobre inatividade e churn.
+| Skill | Onde obter | Reforça o quê |
+|---|---|---|
+| `databricks-core` | [github.com/databricks/databricks-agent-skills](https://github.com/databricks/databricks-agent-skills) | Lado do Agente de Dados, e a seção de SQL deste documento — exploração de catálogo, Unity Catalog, Delta |
+| `data-scientist` | [github.com/borghei/Claude-Skills](https://github.com/borghei/Claude-Skills) | Fases 4 e 5: rigor em teste de hipótese e inferência causal |
+| `marketing-psychology` | [github.com/borghei/Claude-Skills](https://github.com/borghei/Claude-Skills) | Fases 3 e 6: nomear o mecanismo comportamental por trás do padrão e do estímulo |
+| `campaign-analytics` | [github.com/borghei/Claude-Skills](https://github.com/borghei/Claude-Skills) | Fase 7: atribuição multi-touch e funil, quando a proposta precisar de mais lastro |
+| `churn-prevention` | [github.com/borghei/Claude-Skills](https://github.com/borghei/Claude-Skills) | Fases 6 e 7, quando a investigação for sobre inatividade e retenção |
+| `root-cause-investigation` | [github.com/nimrodfisher/data-analytics-skills](https://github.com/nimrodfisher/data-analytics-skills) | Atalho pra fase 4 quando a demanda for fechada e as fases 2 e 3 dispensáveis |
+| skill de visualização de dados | nativa do ambiente, quando houver | Entrega em HTML: paleta e tipografia dos gráficos |
 
-Verifique se a skill existe antes de invocá-la. Skill ausente não é motivo pra parar a investigação, e nenhuma delas substitui as fases deste documento.
+**Instalar.** Clone o repositório e copie a pasta da skill desejada pro diretório de skills do seu agente:
+
+```bash
+git clone https://github.com/databricks/databricks-agent-skills.git
+cp -r databricks-agent-skills/databricks-core ~/.claude/skills/
+```
+
+```powershell
+git clone https://github.com/databricks/databricks-agent-skills.git
+Copy-Item -Recurse databricks-agent-skills\databricks-core $HOME\.claude\skills\
+```
+
+Ajuste o caminho de destino ao seu ambiente — em alguns harnesses é `.claude/skills/` na raiz do projeto, em outros um diretório global. Confira a estrutura do repositório antes de copiar: alguns agrupam várias skills em subpastas, outros têm o `SKILL.md` na raiz.
+
+**Comece por `databricks-core`** se você tiver acesso direto ao warehouse — é a que mais reforça a seção de SQL. Depois `data-scientist` e `marketing-psychology`.
+
+Verifique se a skill existe antes de invocá-la, e não invente nome de skill: vale o mesmo guard rail dos nomes de tabela. Skill ausente não é motivo pra parar a investigação, e nenhuma delas substitui as fases deste documento.
 
 ## Adaptação ao seu ambiente
 
